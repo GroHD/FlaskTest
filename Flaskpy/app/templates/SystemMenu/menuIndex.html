@@ -1,0 +1,21 @@
+{% extends "base.html"%}
+{%block content%}
+{%if userInfo%}
+    <!--头像-->
+    {%include "baseHeadImg.html" ignore missing%}
+     <div class="panel-body row" style="min-width:500px">
+          <!--左侧导航-->
+        <div class="col-sm-3 " >
+            {% include "baseLeftMenu.html" ignore missing%}
+        </div>
+         <div class="col-sm-7"  style="float:left;margin-left: 10px">
+             <table class="table table-striped">
+                <tr>
+                    <td >序号</td><td >菜单名称</td><td >菜单URL</td><td>是否启用</td>
+                </tr>
+
+             </table>
+         </div>
+     </div>
+{%endif%}
+{%endblock%}

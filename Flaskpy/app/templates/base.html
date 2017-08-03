@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta charset="UTF-8">
+    {%if title%}
+        <title>{{title}}</title>
+    {%else%}
+    <title>hd block</title>
+    {%endif%}
+<link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+</head>
+<body>
+    <div class="container text-center">
+        <ul class="nav nav-pills">
+            <li role="presentation" id="index_Menu"><a href="/index">首页</a></li>
+            {%if not g.user%}
+            <li role="presentation" id="userLogin_Menu"><a href="/userLogin">登陆</a></li>
+            <li role="presentation" class="disabled"><a href="#">注册</a></li>
+            {%else%}
+            <li role="presentation" id="userInfo_Menu" ><a href="/userInfo">{{g.user.loginName}}</a></li>
+            <li role="presentation"><a href="/loginOut">注销</a></li>
+            {%endif%}
+        </ul>
+
+    <!--flash 的闪现消息-->
+    {%with messages = get_flashed_messages()%}
+    {%for message in messages%}
+        <div class="alert alert-danger" role="alert">{{message}}</div>
+    {%endfor%}
+    {%endwith%}
+
+    {%block content%}{%endblock%}
+
+
+</div>
+</body>
+<!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
+<script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+ <script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
+<script src="/static/layer/layer.js"></script>
+<script type="text/javascript">
+    window.onload=function () {
+        url = window.location;
+        //选中左侧菜单
+        if (new RegExp("userInfo").test(url)) {
+            $("#userInfo").attr("class", "list-group-item active");
+        }
+        else if (new RegExp("LoginRecord").test(url)) {
+            $("#LoginRecord").attr("class", "list-group-item active");
+        }
+         else if (new RegExp("SystemMenu").test(url)) {
+            $("#SystemMenu").attr("class", "list-group-item active");
+        }
+        //选中头部菜单
+        if (new RegExp('index').test(url)) {
+            $("#index_Menu").attr("class", "active");
+        }
+        else if (new RegExp("userLogin").test(url)) {
+             $("#userLogin_Menu").attr("class", "active");
+        }
+        else{
+            $("#userInfo_Menu").attr("class", "active");
+        }
+
+    }
+</script>
+ {%block bottom%}{%endblock%}
+</html>

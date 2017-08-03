@@ -1,0 +1,265 @@
+{% extends "base.html"%}
+{%block content%}
+{%if userInfo%}
+    <!--头像-->
+    {%include "baseHeadImg.html" ignore missing%}
+    <div class="panel-body row" style="min-width:500px">
+        <!--左侧导航-->
+        <div class="col-sm-3 " >
+            {% include "baseLeftMenu.html" ignore missing%}
+        </div>
+
+        <div  class="col-sm-7"  style="float:left;margin-left: 10px">
+           <table class="table table-striped">
+            <tr>
+               <td class="row">
+                <div class="col-sm-6 text-right">
+                    昵称：
+                </div>
+                <div class="col-sm-6 text-left">
+                    {{userInfo.userName}} &nbsp;<button type="button" id="updateNickName" class="btn btn-primary btn-xs">修改昵称</button>
+                </div>
+               </td>
+            </tr>
+            <tr>
+              <td class="row">
+                <div class="col-sm-6 text-right">
+                    邮箱：
+                </div>
+                <div class="col-sm-6 text-left">
+                    {{userInfo.userEmail}}&nbsp;
+                    {%if userInfo.validationEmail == 0%}
+                    <button type="button" id="checkedEmail" class="btn btn-warning btn-xs">未验证</button>
+                    {%else%}
+                    <label class="label label-success btn-xs">已验证</label>
+                    {%endif%}
+                    &nbsp;<button type="button" id="updateEmail"  class="btn btn-primary btn-xs">修改邮箱</button>
+                </div>
+               </td>
+            </tr>
+            <tr>
+              <td class="row">
+                <div class="col-sm-6 text-right">
+                    登陆次数：
+                </div>
+                <div class="col-sm-6 text-left">
+                    {{userInfo.loginCount}} 次
+                </div>
+               </td>
+            </tr>
+            <tr>
+              <td class="row">
+                <div class="col-sm-6 text-right">
+                    密码：
+                </div>
+                <div class="col-sm-6 text-left ">
+                   密码已设置&nbsp;<button type="button" id="updatePassword" class="btn btn-primary btn-xs">修改密码</button>
+                </div>
+               </td>
+            </tr>
+           </table>
+        </div>
+    </div>
+{%endif%}
+{%endblock%}
+{%block bottom%}
+<script type="text/javascript">
+//修改昵称
+$('#updateNickName').on('click', function(){
+  layer.open({
+  type: 1,
+  title:' ',
+  area: ['350px', '180px'],
+  btn:['保存'],
+  shadeClose: true, //点击遮罩关闭
+  content: '\<\div style="padding:20px;"><div class="form-inline"><lable>新昵称：</label><input type="text" maxlength="16" id="newNickName" name="newNickName" class="form-control"/></div>\<\/div>',
+  yes:function (index) {
+      var newNickName = $("#newNickName").val()
+      if (newNickName.trim().length > 0) {
+          $.post('/updateNickName',{newNickName:newNickName},function(data) {
+              if (data == 0) {
+                  layer.alert('修改失败,请稍后再试', {icon: 5});
+              }
+              else {
+                  window.location=window.location;
+              }
+          })
+      }
+      else{
+          layer.alert('新昵称不可为空', {icon: 5});
+      }
+  }
+  });
+});
+//验证邮箱
+$('#checkedEmail').on('click', function(){
+  layer.open({
+  type: 1,
+  title:' ',
+  area: ['400px', '220px'],
+  shadeClose: true, //点击遮罩关闭
+  content: '<div style="padding:20px;"><div class="form-horizontal">' +
+           '<div class="form-group form-group-sm">'+
+           '<label class="col-sm-4 text-right control-label">邮箱：</label><div class="col-sm-8 text-left"><input type="hidden" id="odEmail" value="{{userInfo.userEmail}}">{{userInfo.userEmail}}&nbsp;&nbsp;<button type="button" class="btn btn-primary btn-xs" id="sendYzm" onclick="sendYZM(0)" >发送验证码</button> </div>'+
+           '</div><div class="form-group form-group-sm">'+
+           '<label class="col-sm-4 text-right control-label">验证码：</label><div class="col-sm-8 text-left"><input type="text" id="txtYzm" class="form-control"/></div>'+
+           '</div>'+
+           '<div class="col-sm-12 text-center"><button type="button" onclick="CheckedEmail(0)" class="btn btn-block">验证</button></div>'+
+           '</div></div>'
+  });
+});
+//发送验证码
+var sendMin = 60;//60秒发送一次
+function  sendYZM(oid) {
+    var data ={typ:oid};
+    if (oid == 1) {
+        var newEmail = $("#newEmail").val();
+        if (newEmail.trim().length <= 0) {
+            layer.alert('新邮箱不可为空....', {icon: 5});
+            return;
+        }
+        ;
+        var myreg = /^([a-zA-Z0-9]+[_|\_|\.]?)*[a-zA-Z0-9]+@([a-zA-Z0-9]+[_|\_|\.]?)*[a-zA-Z0-9]+\.[a-zA-Z]{2,3}$/;
+        if (!myreg.test(newEmail)) {
+            layer.alert('请输入有效的邮箱', {icon: 5});
+            return;
+        }
+        var oldEmail = $("#oldEmail").val();
+        if (oldEmail == newEmail.trim()) {
+              layer.alert('新旧邮箱一样,修改失败', {icon: 5});
+            return;
+        }
+       data = {typ:oid,email:newEmail};
+    };
+    $("#newEmail").attr("disabled","disabled");
+    $("#sendYzm").text("正在发送..").attr("disabled","disabled");
+    $.post("/sendEmail",data,function (result) {
+        if (result =="1"){
+            $("#sendYzm").text("已发送("+sendMin+")").attr("disabled","disabled");
+            var inteId = window.setInterval(function () {
+                sendMin = sendMin -1;
+                $("#sendYzm").text("已发送("+sendMin+")");
+                if (sendMin == 0){
+                    $("#sendYzm").text("发送验证码").attr("disabled",false);
+                    window.clearInterval(inteId)
+                    sendMin = 60;
+                };
+            },1000);
+        }
+        else{
+             layer.alert('发送失败,请稍后再试....', {icon: 5});
+        };
+
+    });
+};
+//验证输入的验证码是否正确
+function  CheckedEmail(otp) {
+    var email = "None"
+    if (otp == 1) {
+        email = $("#newEmail").val()
+    }
+    else{
+         email = $("#odEmail").val()
+    }
+
+    var txtYzm = $("#txtYzm").val();
+    if (txtYzm.trim().length<=0){
+        layer.alert('验证码不可为空,请输入', {icon: 5});
+        return;
+    }
+    $.get("/checkedEmail/"+txtYzm+"/"+email,function (result ) {
+        if(result == "1"){
+            window.location = window.location;
+        }
+        else {
+             layer.alert('验证失败,请稍后再试....', {icon: 5});
+        }
+        $("#newEmail").attr("disabled",false);
+    })
+};
+//修改邮箱
+$("#updateEmail").on('click', function(){
+  layer.open({
+  type: 1,
+  title:' ',
+  area: ['400px', '220px'],
+  shadeClose: true, //点击遮罩关闭
+  content: '<div style="padding:20px;"><div class="form-horizontal">' +
+           '<div class="form-group form-group-sm">'+
+           '<label class="col-sm-3 text-right control-label">新邮箱：</label><div class="col-sm-9 text-left"><input type="hidden" id="oldEmail" value="{{userInfo.userEmail}}" > <input type="email" id="newEmail" name="newEmail" /> &nbsp;&nbsp;<button type="button" class="btn btn-primary btn-xs" id="sendYzm" onclick="sendYZM(1)" >发送验证码</button> </div>'+
+           '</div><div class="form-group form-group-sm">'+
+           '<label class="col-sm-3 text-right control-label">验证码：</label><div class="col-sm-9 text-left"><input type="text" id="txtYzm" class="form-control" /></div>'+
+           '</div>'+
+           '<div class="col-sm-12 text-center"><button type="button" onclick="CheckedEmail(1)" class="btn btn-block">验证</button></div>'+
+           '</div></div>'
+  });
+});
+
+//修改密码
+$("#updatePassword").on('click',function () {
+        layer.open({
+  type: 1,
+  title:' ',
+  area: ['400px', '240px'],
+  shadeClose: true, //点击遮罩关闭
+  content: '<div style="padding:20px;"><div class="form-horizontal">' +
+           '<div class="form-group form-group-sm">'+
+           '<label class="col-sm-4 text-right control-label">旧密码：</label><div class="col-sm-8 text-left"><input type="password" id="oldPass" name="oldPass" class="form-control"/></div>'+
+           '</div><div class="form-group form-group-sm">'+
+           '<label class="col-sm-4 text-right control-label">新密码：</label><div class="col-sm-8 text-left"><input type="password" id="newPass" name="newPass" class="form-control"/></div>'+
+           '</div>'+
+           '<div class="form-group form-group-sm">'+
+           '<label class="col-sm-4 text-right control-label">确认新密码：</label><div class="col-sm-8 text-left"><input type="password" id="confNewPass" name="confNewPass" class="form-control"/></div>'+
+           '</div>'+
+           '<div class="col-sm-4 text-center">&nbsp;</div><div class="col-sm-8 text-left"><button type="button" onclick="UpdateEmail()" class="btn btn-block btn-success">修改</button></div>'+
+           '</div></div>'
+  });
+});
+
+//按确认修改密码
+function UpdateEmail () {
+        //旧密码
+        var oldPass = $('#oldPass').val();
+        //新密码
+        var newPass = $('#newPass').val();
+        //新密码
+        var confNewPass = $('#confNewPass').val();
+        if (oldPass.trim().length<=0){
+            layer.msg('旧密码不可为空', {icon: 5});
+            return;
+        };
+        if (newPass.trim().length<=0){
+            layer.msg('新密码不可为空', {icon: 5});
+            return;
+        };
+        if(confNewPass.trim().length<=0){
+            layer.msg('确认新密码不可为空', {icon: 5});
+            return;
+        };
+        if (newPass.trim() !=confNewPass.trim()){
+            layer.msg('两次新密码不一致,请重新输入', {icon: 5});
+            return;
+        };
+        var data ={oldPass:oldPass,newPass:newPass};
+        $.post("/updatePass",data,function (result) {
+            if (result =="0"){
+                 layer.msg('旧密码不可为空', {icon: 5});
+                 return;
+            }
+             if (result =="-1"){
+                 layer.msg('新密码不可为空', {icon: 5});
+                 return;
+            }
+            if(result == "1"){
+                layer.msg('旧密码错误', {icon: 5});
+                 return;
+            }
+            else{
+                layer.closeAll();
+                layer.msg('修改成功,下次登陆使用新密码', {icon: 1});
+                 return;
+            }
+        })
+    };
+</script>
+{%endblock%}
