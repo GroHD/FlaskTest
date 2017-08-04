@@ -10,10 +10,32 @@
         </div>
          <div class="col-sm-7"  style="float:left;margin-left: 10px">
              <table class="table table-striped">
-                <tr>
-                    <td >序号</td><td >菜单名称</td><td >菜单URL</td><td>是否启用</td>
-                </tr>
-
+                 <tr>
+                     <td >序号</td><td >菜单名称</td><td >菜单URL</td><td>是否启用</td><td>操作</td>
+                 </tr>
+                    <tr>
+                        <td>
+                            <h4>
+                                {{newMenuId}}
+                            </h4>
+                        </td>
+                        <td>
+                            <input type="text" id="menuName" name="menuName" class="form-control"placeholder="菜单名称"/>
+                        </td>
+                        <td>
+                            <input type="text" id="menuUrl" name="menuUrl" class="form-control"placeholder="菜单URL"/>
+                        </td>
+                        <td>
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" id="menuEnable" name="menuEnable" />启用
+                                </label>
+                            </div>
+                        </td>
+                         <td>
+                            <button class="btn btn-group-sm btn-primary">保存</button>
+                        </td>
+                    </tr>
              </table>
          </div>
      </div>
