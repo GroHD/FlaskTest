@@ -11,7 +11,7 @@ import  hashlib,time
 def SystemUserLogin(form):
     if form.validate_on_submit():
        hasbPass = hashlib.sha256()
-       hasbPass.update(form.userPass.data)
+       hasbPass.update(form.userPass.data.encode('utf8'))
        shaPass = hasbPass.hexdigest()
        userAdmin =  db.session.query(LoginUser).filter(LoginUser.loginName==form.userName.data,LoginUser.loginPass == shaPass).first()
        if  userAdmin != None:
@@ -32,7 +32,7 @@ def SystemUserLogin(form):
 def SystemUpdateNickName(nickName):
     if nickName:
         userInfo = db.session.query(LoginUser).filter(LoginUser.id == session.get('userIndex')).first()
-        userInfo.userName = buffer(nickName)
+        userInfo.userName = nickName
         db.session.commit()
         return "1",200
     else:
@@ -44,9 +44,15 @@ def SystemUpdatePassword(oldPass,newPass):
     if newPass is None:
         # 新密码为空
         return "-1"
-    if g.user.loginPass == oldPass:
+    hasbPass = hashlib.sha256()
+    hasbPass.update(oldPass.encode('utf8'))
+    shaPass = hasbPass.hexdigest()
+    if g.user.loginPass ==shaPass :
         user = db.session.query(LoginUser).filter(LoginUser.id == session.get('userIndex')).first()
-        user.loginPass = newPass
+        hasbPass = hashlib.sha256()
+        hasbPass.update(newPass.encode('utf8'))
+        shaPass = hasbPass.hexdigest()
+        user.loginPass = shaPass
         db.session.commit()
         # 修改成功
         return "1"

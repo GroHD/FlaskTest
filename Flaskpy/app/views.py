@@ -63,7 +63,7 @@ def UpdateNickName():
     if None is g.user:
         return "2",200
     nickName = request.values.get('newNickName',default=None)
-    Flask_SystemUser.SystemUpdateNickName(nickName)
+    return  Flask_SystemUser.SystemUpdateNickName(nickName)
 #发送Email
 @app.route("/sendEmail",methods=['POST'])
 def Send_Cheked_Email():
@@ -106,6 +106,7 @@ def loginOut():
     if session['userIndex']:
         session.pop('userIndex',None)
     return redirect(url_for('index'))
+#修改密码
 @app.route('/updatePass',methods=['POST'])
 def UpdatePassword():
     oldPass = request.values.get('oldPass')
@@ -131,6 +132,8 @@ def getCurrent_user():
         #为了防止session 不操作过期,重新复制然后更新session 过期时间
         session['userIndex'] = session.get('userIndex')
         user = db.session.query(LoginUser).filter(LoginUser.id == session.get('userIndex')).first()
+
+        #user.userName = str(user.userName,encoding='utf8')
         return user
     else:
         return None
