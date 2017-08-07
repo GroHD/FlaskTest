@@ -86,22 +86,25 @@ def Send_Cheked_Email():
 #验证邮箱验证码
 @app.route('/checkedEmail/<code>/<email>')
 def CheCked_Email(code,email):
-    #拿到验证码
-    if not session.keys().__contains__('rand_'+str(session.get('userIndex'))):
-        return "2"
+    if g.user:
+        #拿到验证码
+        if not session.keys().__contains__('rand_'+str(session.get('userIndex'))):
+            return "2"
 
-    strCode = session.get('rand_'+str(session.get('userIndex')))
-    if strCode == code:
-        #修改邮箱验证状态
-        user = db.session.query(LoginUser).filter(LoginUser.id == session.get('userIndex')).first()
-        user.validationEmail = 1
-        user.userEmail = email
-        db.session.commit()
-        #移除ession
-        del session['rand_' + str(session.get('userIndex'))]
-        return "1"
+        strCode = session.get('rand_'+str(session.get('userIndex')))
+        if strCode == code:
+            #修改邮箱验证状态
+            user = db.session.query(LoginUser).filter(LoginUser.id == session.get('userIndex')).first()
+            user.validationEmail = 1
+            user.userEmail = email
+            db.session.commit()
+            #移除ession
+            del session['rand_' + str(session.get('userIndex'))]
+            return "1"
+        else:
+            return "0"
     else:
-        return "0"
+        return "Login Time Out"
 #退出登陆
 @app.route('/loginOut')
 def loginOut():
@@ -111,21 +114,30 @@ def loginOut():
 #修改密码
 @app.route('/updatePass',methods=['POST'])
 def UpdatePassword():
-    oldPass = request.values.get('oldPass')
-    newPass = request.values.get('newPass')
-    return Flask_SystemUser.SystemUpdatePassword(oldPass,newPass)
+    if g.user:
+        oldPass = request.values.get('oldPass')
+        newPass = request.values.get('newPass')
+        return Flask_SystemUser.SystemUpdatePassword(oldPass,newPass)
+    else:
+        return "Login Time Out"
 #菜单Menu
 @app.route('/SystemMenu')
 def SystemMenu():
-   return  Flask_Menu.SystemMenu()
+    if g.user:
+        return  Flask_Menu.SystemMenu()
+    else:
+        return redirect(url_for('index'))
 #添加菜单
 @app.route('/SystemMenuAdd',methods=['POST'])
 def SystemMenuAdd():
     try:
-        menuName = request.values.get('menuName')
-        menuUrl = request.values.get('menuUrl')
-        menuEnable = request.values.get('menuEnable')
-        return  Flask_Menu.SystemMenuAdd(menuName,menuUrl,menuEnable)
+        if g.user:
+            menuName = request.values.get('menuName')
+            menuUrl = request.values.get('menuUrl')
+            menuEnable = request.values.get('menuEnable')
+            return  Flask_Menu.SystemMenuAdd(menuName,menuUrl,menuEnable)
+        else:
+            return "Login Time Out"
     except Exception as ex:
         return "0"
 #404错误
@@ -136,6 +148,7 @@ def error_NotPage(e):
 @app.errorhandler(500)
 def error_ServerError(e):
     return "Error!Server!Error!",500
+
 #405是什么?忘记了
 @app.errorhandler(405)
 def error_PageError(e):
@@ -144,6 +157,8 @@ def error_PageError(e):
 @app.before_request
 def before_request():
     g.user =getCurrent_user()
+
+
 #拿到用户数据
 def getCurrent_user():
     if session.keys().__contains__('userIndex'):
