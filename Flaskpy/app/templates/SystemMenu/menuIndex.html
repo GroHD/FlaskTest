@@ -28,16 +28,40 @@
                         <td>
                             <div class="checkbox">
                                 <label>
-                                    <input type="checkbox" id="menuEnable" name="menuEnable" />启用
+                                    <input type="checkbox" id="menuEnable" value="1" name="menuEnable"/>启用
                                 </label>
                             </div>
                         </td>
                          <td>
-                            <button class="btn btn-group-sm btn-primary">保存</button>
+                            <button class="btn btn-group-sm btn-primary" id="saveMenu">保存</button>
                         </td>
                     </tr>
              </table>
          </div>
      </div>
 {%endif%}
+{%endblock%}
+{%block bottom%}
+<script type="text/javascript">
+    $('#saveMenu').on('click', function(){
+        var menuName = $("#menuName").val();
+        if (menuName.trim().length<=0){
+            layer.msg('菜单名称不可为空', {icon: 5});
+            return;
+        }
+        var menuUrl = $("#menuUrl").val();
+        if (menuUrl.trim().length<=0){
+            layer.msg('菜单URL不可为空', {icon: 5});
+            return;
+        }
+        var menuEnable = 0;
+        if(document.getElementById("menuEnable").checked == true){
+            menuEnable = $("#menuEnable").val();
+        }
+        var data  ={menuName:menuName,menuUrl:menuUrl,menuEnable:menuEnable};
+        $.post("/SystemMenuAdd",data,function (result) {
+            alert(result)
+        })
+    });
+</script>
 {%endblock%}

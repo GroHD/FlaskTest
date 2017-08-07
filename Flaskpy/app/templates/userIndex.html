@@ -78,7 +78,7 @@ $('#updateNickName').on('click', function(){
       if (newNickName.trim().length > 0) {
           $.post('/updateNickName',{newNickName:newNickName},function(data) {
               if (data == 0) {
-                  layer.alert('修改失败,请稍后再试', {icon: 5});
+                  layer.msg('修改失败,请稍后再试', {icon: 5});
               }
               else {
                layer.closeAll();
@@ -87,7 +87,7 @@ $('#updateNickName').on('click', function(){
           })
       }
       else{
-          layer.alert('新昵称不可为空', {icon: 5});
+          layer.msg('新昵称不可为空', {icon: 5});
       }
   }
   });
@@ -116,7 +116,7 @@ function  sendYZM(oid) {
     if (oid == 1) {
         var newEmail = $("#newEmail").val();
         if (newEmail.trim().length <= 0) {
-            layer.alert('新邮箱不可为空....', {icon: 5});
+            layer.msg('新邮箱不可为空....', {icon: 5});
             return;
         }
         ;
@@ -127,7 +127,7 @@ function  sendYZM(oid) {
         }
         var oldEmail = $("#oldEmail").val();
         if (oldEmail == newEmail.trim()) {
-              layer.alert('新旧邮箱一样,修改失败', {icon: 5});
+              layer.msg('新旧邮箱一样,修改失败', {icon: 5});
             return;
         }
        data = {typ:oid,email:newEmail};
@@ -148,7 +148,7 @@ function  sendYZM(oid) {
             },1000);
         }
         else{
-             layer.alert('发送失败,请稍后再试....', {icon: 5});
+             layer.msg('发送失败,请稍后再试....', {icon: 5});
         };
 
     });
@@ -165,7 +165,7 @@ function  CheckedEmail(otp) {
 
     var txtYzm = $("#txtYzm").val();
     if (txtYzm.trim().length<=0){
-        layer.alert('验证码不可为空,请输入', {icon: 5});
+        layer.msg('验证码不可为空,请输入', {icon: 5});
         return;
     }
     $.get("/checkedEmail/"+txtYzm+"/"+email,function (result ) {
@@ -173,7 +173,7 @@ function  CheckedEmail(otp) {
             window.location = window.location;
         }
         else {
-             layer.alert('验证失败,请稍后再试....', {icon: 5});
+             layer.msg('验证失败,请稍后再试....', {icon: 5});
         }
         $("#newEmail").attr("disabled",false);
     })

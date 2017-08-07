@@ -9,6 +9,7 @@ from .forms import LoginForm
 from .models import LoginUser,LoginUserIp
 import math
 
+#首页
 @app.route('/')
 @app.route('/index')
 def index():
@@ -25,6 +26,7 @@ def index():
 
     ]
     return render_template('index.html',user=user,posts=posts)
+#用户登陆
 @app.route('/userLogin',methods=['GET','POST'])
 def userLogin():
     #如果已登陆则直接跳转到用户界面
@@ -32,7 +34,6 @@ def userLogin():
         return render_template('userIndex.html',title='登录成功',userInfo = g.user)
     form = LoginForm()
     return Flask_SystemUser.SystemUserLogin(form)
-
 #用户信息
 @app.route('/userInfo')
 def UserInfo():
@@ -82,6 +83,7 @@ def Send_Cheked_Email():
         return "1"
     else:
         return rand
+#验证邮箱验证码
 @app.route('/checkedEmail/<code>/<email>')
 def CheCked_Email(code,email):
     #拿到验证码
@@ -112,13 +114,29 @@ def UpdatePassword():
     oldPass = request.values.get('oldPass')
     newPass = request.values.get('newPass')
     return Flask_SystemUser.SystemUpdatePassword(oldPass,newPass)
-
+#菜单Menu
 @app.route('/SystemMenu')
 def SystemMenu():
    return  Flask_Menu.SystemMenu()
+#添加菜单
+@app.route('/SystemMenuAdd',methods=['POST'])
+def SystemMenuAdd():
+    try:
+        menuName = request.values.get('menuName')
+        menuUrl = request.values.get('menuUrl')
+        menuEnable = request.values.get('menuEnable')
+        return  Flask_Menu.SystemMenuAdd(menuName,menuUrl,menuEnable)
+    except Exception as ex:
+        return "0"
+#404错误
 @app.errorhandler(404)
 def error_NotPage(e):
     return render_template('error/404.html',title='未找到页面',errorMess='页面正在施工请稍后再试!')
+#500错误
+@app.errorhandler(500)
+def error_ServerError(e):
+    return "Error!Server!Error!",500
+#405是什么?忘记了
 @app.errorhandler(405)
 def error_PageError(e):
     return "Say Hello",200
