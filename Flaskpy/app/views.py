@@ -132,10 +132,11 @@ def SystemMenu():
 def SystemMenuAdd():
     try:
         if g.user:
+            menuType = request.values.get('menuType')
             menuName = request.values.get('menuName')
             menuUrl = request.values.get('menuUrl')
             menuEnable = request.values.get('menuEnable')
-            return  Flask_Menu.SystemMenuAdd(menuName,menuUrl,menuEnable)
+            return  Flask_Menu.SystemMenuAdd(menuName,menuUrl,menuEnable,menuType)
         else:
             return "Login Time Out"
     except Exception as ex:

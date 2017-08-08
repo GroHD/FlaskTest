@@ -1,49 +1,66 @@
 {% extends "base.html"%}
 {%block content%}
 {%if userInfo%}
-    <!--头像-->
-    {%include "baseHeadImg.html" ignore missing%}
-     <div class="panel-body row" style="min-width:500px">
-          <!--左侧导航-->
-        <div class="col-sm-3 " >
-            {% include "baseLeftMenu.html" ignore missing%}
-        </div>
-         <div class="col-sm-7"  style="float:left;margin-left: 10px">
-             <table class="table table-striped">
-                 <tr>
-                     <td >序号</td><td >菜单名称</td><td >菜单URL</td><td>是否启用</td><td>操作</td>
-                 </tr>
-                    <tr>
-                        <td>
-                            <h4>
-                                {{newMenuId}}
-                            </h4>
-                        </td>
-                        <td>
-                            <input type="text" id="menuName" name="menuName" class="form-control"placeholder="菜单名称"/>
-                        </td>
-                        <td>
-                            <input type="text" id="menuUrl" name="menuUrl" class="form-control"placeholder="菜单URL"/>
-                        </td>
-                        <td>
-                            <div class="checkbox">
-                                <label>
-                                    <input type="checkbox" id="menuEnable" value="1" name="menuEnable"/>启用
-                                </label>
-                            </div>
-                        </td>
-                         <td>
-                            <button class="btn btn-group-sm btn-primary" id="saveMenu">保存</button>
-                        </td>
-                    </tr>
-             </table>
-         </div>
-     </div>
+<!--头像-->
+{%include "baseHeadImg.html" ignore missing%}
+<div class="panel-body row" style="min-width:500px">
+    <!--左侧导航-->
+    <div class="col-sm-3 " >
+        {% include "baseLeftMenu.html" ignore missing%}
+    </div>
+    <div class="col-sm-8"  style="float:left;margin-left: 10px">
+        <table class="table table-striped">
+            <tr>
+                <td >序号</td><td >菜单名称</td><td >菜单URL</td><td>是否启用</td><td>操作</td>
+            </tr>
+            {%for menuItem in sysMenuAll%}
+            <tr id="menu_{{menuItem.id}}">
+                <td >{{menuItem.id}}</td><td >{{menuItem.menuName}}</td><td >{{menuItem.menuUrl}}</td><td>{%if menuItem.menuDisable %}
+                启用
+                {%else%}
+                禁用
+                {%endif%}</td><td><a href="#" onclick="Update_Menu({{menuItem.id}})">修改</a>|<a href="#">删除</a>|<a href="#">
+                {%if menuItem.menuDisable %}
+                禁用
+                {%else%}
+                启用
+                {%endif%}
+            </a></td>
+            </tr>
+            {%endfor%}
+            <!--添加-->
+            <tr id="menu_Add">
+                <td>
+                    <h4>
+                        {{newMenuId}}
+                    </h4>
+                </td>
+                <td>
+                    <input type="text" id="menuName" name="menuName" class="form-control"placeholder="菜单名称"/>
+                </td>
+                <td>
+                    <input type="text" id="menuUrl" name="menuUrl" class="form-control"placeholder="菜单URL"/>
+                </td>
+                <td>
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" id="menuEnable" value="1" name="menuEnable"/>启用
+                        </label>
+                    </div>
+                </td>
+                <td>
+                    <button class="btn btn-group-sm btn-primary" onclick="SaveMenu(0)">保存</button>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
 {%endif%}
 {%endblock%}
 {%block bottom%}
 <script type="text/javascript">
-    $('#saveMenu').on('click', function(){
+
+    function SaveMenu(menuType){
         var menuName = $("#menuName").val();
         if (menuName.trim().length<=0){
             layer.msg('菜单名称不可为空', {icon: 5});
@@ -58,10 +75,59 @@
         if(document.getElementById("menuEnable").checked == true){
             menuEnable = $("#menuEnable").val();
         }
-        var data  ={menuName:menuName,menuUrl:menuUrl,menuEnable:menuEnable};
+        var data  ={menuName:menuName,menuUrl:menuUrl,menuEnable:menuEnable,menuType:menuType};
         $.post("/SystemMenuAdd",data,function (result) {
-            alert(result)
+            if (result == "1"){
+                layer.msg('菜单名称不可为空', {icon: 5});
+            }
+            else if (result == "2"){
+                layer.msg('菜单URL不可为空', {icon: 5});
+            }
+            else if (result == "0"){
+                if (menuType<=0){
+                    window.location.href = window.location.href;
+                }
+                else{
+                    var tdHtml = "<td >"+menuType+"</td><td >"+menuName+"</td><td >"+menuUrl+"</td><td >"+(menuEnable=="0"?"禁用":"启用")+"</td><td ><a href=\"#\" onclick=\"Update_Menu("+menuType+")\">修改</a>|<a href=\"#\">删除</a>|<a href=\"#\">"+(menuEnable=='1'?'禁用':'启用')+"</a></td>";
+                     $("#menu_" + menuType).html(tdHtml);
+                     $("#menu_Add").attr("style", "");
+                }
+            }
+            else{
+                layer.msg(result, {icon: 5});
+            }
         })
-    });
+    };
+    //修改菜单栏
+    var tmpHtml=""; //临时变量,用来记tr里的td标签,如果点击取消修改则需要返回之前的数据
+    function Update_Menu(oid) {
+        $("#menu_Add").attr("style", "display:none");
+        var tdHtml = $("#menu_" + oid).html();
+        tmpHtml = tdHtml;
+        reg = new RegExp('<td>', 'ig');
+        tdHtml = tdHtml.replace(reg, '');
+        reg = new RegExp('</td>', 'ig');
+        tdHtml = tdHtml.replace(reg, '|');
+        var itemSplit = tdHtml.split('|');
+        var html = "<td><h4>" + itemSplit[0].trim() + "</h4></td><td><input type='text' id='menuName' value='" + itemSplit[1].trim() + "' name='menuName' class='form-control' placeholder='菜单名称'/>\<" +
+            "/td><td><input type='text' id='menuUrl' value='" + itemSplit[2].trim() + "' name='menuUrl' class='form-control' placeholder='菜单URL'/></td><td><div class='checkbox'><label>" +
+            "<input type='checkbox' id='menuEnable' value='1'  name='menuEnable'/>启用</label></div></td><td><a href='#' class='' onclick='updateMenuSave(" + oid + ")' >保存</a>|<a href='#' class='' onclick='cancelUpdate(" + oid + ")' >取消</a>" +
+            "</td>";
+        $("#menu_" + oid).html(html);
+        if (itemSplit[3].trim() == "启用") {
+            $("#menuEnable").attr("checked", "checked");
+        }
+        else {
+           $("#menuEnable").attr("checked", false);
+        }
+    };
+    function cancelUpdate(oid) {
+        $("#menu_" + oid).html(tmpHtml);
+        $("#menu_Add").attr("style", "");
+    };
+
+    function updateMenuSave(oid){
+        SaveMenu(oid);
+    };
 </script>
 {%endblock%}
