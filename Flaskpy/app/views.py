@@ -6,7 +6,9 @@ Name:HD
 from . import app,db,Flask_Email,Flask_Menu,Flask_SystemUser
 from flask import  render_template,redirect,url_for,session,flash,g,request
 from .forms import LoginForm
-from .models import LoginUser,LoginUserIp
+from .models import LoginUser,LoginUserIp,SystemMenu
+from . import  models
+from jinja2 import contextfunction
 import math
 
 #首页
@@ -25,20 +27,20 @@ def index():
 
 
     ]
-    return render_template('index.html',user=user,posts=posts)
+    return render_template('index.html',user=user,posts=posts,menu =g.menu)
 #用户登陆
 @app.route('/userLogin',methods=['GET','POST'])
 def userLogin():
     #如果已登陆则直接跳转到用户界面
     if session.keys().__contains__('userIndex'):
-        return render_template('userIndex.html',title='登录成功',userInfo = g.user)
+        return render_template('userIndex.html',title='登录成功',userInfo = g.user,menu =g.menu)
     form = LoginForm()
     return Flask_SystemUser.SystemUserLogin(form)
 #用户信息
 @app.route('/userInfo')
 def UserInfo():
     if g.user:
-        return render_template('userIndex.html', title='用户中心', userInfo=g.user)
+        return render_template('userIndex.html', title='用户中心', userInfo=g.user,menu =g.menu)
     else:
         return redirect(url_for('index'))
 #登陆记录
@@ -55,7 +57,7 @@ def LoginRecord(pageIndex):
         recoreds = recoreds.offset(pageStart).limit(pageCount).all()
         PageSum = int(math.ceil((itemCount/(pageCount*1.0))))
         pageSumCount = range(1,(PageSum+1))
-        return render_template('LoginRecord.html',title='用户中心',userInfo=g.user,loginUserIp = recoreds,pageCount = pageSumCount,pageInde = pageIndex,PageSum = PageSum)
+        return render_template('LoginRecord.html',title='用户中心',userInfo=g.user,loginUserIp = recoreds,pageCount = pageSumCount,pageInde = pageIndex,PageSum = PageSum,menu =g.menu)
     else:
         return redirect(url_for('index'))
 #修改昵称
@@ -141,6 +143,32 @@ def SystemMenuAdd():
             return "Login Time Out"
     except Exception as ex:
         return "0"
+#修改菜单的状态
+@app.route('/menuState',methods=['POST'])
+def SystemMenuStateChange():
+    if  g.user is not None :
+        try:
+            id = request.values.get('id')
+            state = request.values.get('state')
+            return Flask_Menu.SysteMenuStateChange(id,state)
+        except Exception as ex:
+            print("SystemMenuStateChange===>>"+ex)
+            return "-2"
+    else:
+        return "Login Time Out...."
+#删除菜单(永久删除)
+@app.route('/menuDelete',methods=['POST'])
+def SystemMenuDelete():
+    if g.user is not None:
+        try:
+            id = request.values.get('id')
+            return Flask_Menu.SystemMenuDeleted(id)
+        except Exception as ex:
+            print("SystemMenuDelete=====>"+ex)
+            return "-1"
+    else:
+        return "Login Time Out...."
+
 #404错误
 @app.errorhandler(404)
 def error_NotPage(e):
@@ -158,8 +186,7 @@ def error_PageError(e):
 @app.before_request
 def before_request():
     g.user =getCurrent_user()
-
-
+    getMenu()
 #拿到用户数据
 def getCurrent_user():
     if session.keys().__contains__('userIndex'):
@@ -171,3 +198,13 @@ def getCurrent_user():
         return user
     else:
         return None
+
+def getMenu():
+    menu = db.session.query(models.SystemMenu).filter(models.SystemMenu.menuDisable == 1).all()
+    g.menu = menu
+
+
+#替换模板
+@contextfunction
+def replace_Temp(context):
+    pass;

@@ -6,12 +6,13 @@ Name:HD
 '''
 from flask import render_template,g
 from . import db,models
+#菜单主页
 def SystemMenu():
-    menuAll = db.session.query(models.SystemMenu).order_by(models.SystemMenu.id.desc()).all();
+    menuAll = db.session.query(models.SystemMenu).order_by(models.SystemMenu.id.asc()).all();
     maxId = len(menuAll)
     maxId = maxId+1
-    return render_template('/SystemMenu/menuIndex.html',title='菜单管理',userInfo=g.user,newMenuId=maxId,sysMenuAll = menuAll)
-
+    return render_template('/SystemMenu/menuIndex.html',title='菜单管理',userInfo=g.user,newMenuId=maxId,sysMenuAll = menuAll,menu =g.menu)
+#修改添加菜单
 def SystemMenuAdd(menuName,menuUrl,menuChecked,menuType):
     try:
         if len(menuName.strip(' '))<=0:
@@ -32,3 +33,27 @@ def SystemMenuAdd(menuName,menuUrl,menuChecked,menuType):
         return "0"
     except Exception as ex:
         raise ex
+#修改菜单状态
+def SysteMenuStateChange(id,state):
+    try:
+        menu = db.session.query(models.SystemMenu).filter(models.SystemMenu.id == int(id)).first()
+        if menu is None:
+            return "-1"
+        if state == 'True':
+            menu.menuDisable = 0
+        else:
+            menu.menuDisable = 1
+
+        db.session.commit()
+        return "0"
+    except Exception as ex:
+        raise ex
+
+def SystemMenuDeleted(oid):
+    try:
+        db.session.query(models.SystemMenu).filter(models.SystemMenu.id == oid).delete()
+        db.session.commit()
+        return "0"
+    except Exception as ex:
+        raise ex
+

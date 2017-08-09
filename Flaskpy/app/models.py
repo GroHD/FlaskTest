@@ -15,7 +15,6 @@ class LoginUser(db.Model):
     loginCount = db.Column(db.Integer,default=0)
     validationEmail = db.Column(db.Integer,default=0)#是否验证邮箱,默认都是为验证
 
-
 class LoginUserIp(db.Model):
     __tablename__='loginuserip'
     id = db.Column(db.Integer,primary_key=True,autoincrement=True)
