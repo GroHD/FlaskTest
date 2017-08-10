@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta charset="UTF-8">
     {%if title%}
@@ -9,7 +10,24 @@
     <title>hd block</title>
     {%endif%}
 <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+<style type="text/css">
+    /***** Standard 960px *****/
+@media only screen and (min-width:960px) and (max-width:1200px) {
+    .row { margin:0 auto; width:960px; }
+}
+/***** iPad Smaller than 959px *****/
+@media only screen and (min-width: 768px) and (max-width: 959px) {
+    .row { margin:0 auto; width:768px; }
+}
+/***** iPhone (portrait) *****/
+@media only screen and (max-width: 767px) {
+    .row { margin:0 auto; width:300px; }
+}
 
+@media only screen and (min-width: 480px) and (max-width: 767px) {
+    .row { margin:0 auto; width:456px; }
+}
+</style>
 </head>
 <body>
     <div class="container text-center">
@@ -38,11 +56,17 @@
 
 
 </div>
+<div class="alert alert-warning">
+	<a href="#" class="close" data-dismiss="alert">
+		&times;
+	</a>
+	<strong>警告！</strong>您的网络连接有问题。
+</div>
 </body>
 <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
 <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
  <script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
-<script src="/static/layer/layer.js"></script>
+<script src="/static/layer/mobile/layer.js"></script>
 <script type="text/javascript">
     window.onload=function () {
         url = window.location;
@@ -67,7 +91,15 @@
             $("#userInfo_Menu").attr("class", "active");
         }
 
+
     }
+     function ShowMess(objMess) {
+            layer.open({
+                content: objMess
+                ,skin: 'footer'
+              });
+
+        }
 </script>
  {%block bottom%}{%endblock%}
 </html>

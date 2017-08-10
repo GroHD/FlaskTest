@@ -5,55 +5,55 @@
     {%include "baseHeadImg.html" ignore missing%}
     <div class="panel-body row" style="min-width:500px">
         <!--左侧导航-->
-        <div class="col-sm-3 " >
+        <div class="col-xs-4 " >
             {% include "baseLeftMenu.html" ignore missing%}
         </div>
 
-        <div  class="col-sm-7"  style="float:left;margin-left: 10px">
+        <div  class="col-xs-7"  style="float:left;margin-left: 10px">
            <table class="table table-striped">
             <tr>
                <td class="row">
-                <div class="col-sm-6 text-right">
+                <div class="col-xs-4 text-right">
                     昵称：
                 </div>
-                <div class="col-sm-6 text-left">
-                    {{userInfo.userName}} &nbsp;<button type="button" id="updateNickName" class="btn btn-primary btn-xs">修改昵称</button>
+                <div class="col-xs-8 text-left">
+                    {{userInfo.userName}} &nbsp;<button type="button" id="updateNickName" class="btn btn-primary btn-xs">修改</button>
                 </div>
                </td>
             </tr>
             <tr>
               <td class="row">
-                <div class="col-sm-6 text-right">
+                <div class="col-xs-4 text-right">
                     邮箱：
                 </div>
-                <div class="col-sm-6 text-left">
+                <div class="col-xs-8 text-left">
                     {{userInfo.userEmail}}&nbsp;
                     {%if userInfo.validationEmail == 0%}
                     <button type="button" id="checkedEmail" class="btn btn-warning btn-xs">未验证</button>
                     {%else%}
                     <label class="label label-success btn-xs">已验证</label>
                     {%endif%}
-                    &nbsp;<button type="button" id="updateEmail"  class="btn btn-primary btn-xs">修改邮箱</button>
+                    &nbsp;<button type="button" id="updateEmail"  class="btn btn-primary btn-xs">修改</button>
                 </div>
                </td>
             </tr>
             <tr>
               <td class="row">
-                <div class="col-sm-6 text-right">
-                    登陆次数：
+                <div class="col-xs-4 text-right">
+                    登录：
                 </div>
-                <div class="col-sm-6 text-left">
+                <div class="col-xs-8 text-left">
                     {{userInfo.loginCount}} 次
                 </div>
                </td>
             </tr>
             <tr>
               <td class="row">
-                <div class="col-sm-6 text-right">
+                <div class="col-xs-4 text-right">
                     密码：
                 </div>
-                <div class="col-sm-6 text-left ">
-                   密码已设置&nbsp;<button type="button" id="updatePassword" class="btn btn-primary btn-xs">修改密码</button>
+                <div class="col-xs-8 text-left ">
+                   密码已设置&nbsp;<button type="button" id="updatePassword" class="btn btn-primary btn-xs">修改</button>
                 </div>
                </td>
             </tr>
@@ -67,27 +67,23 @@
 //修改昵称
 $('#updateNickName').on('click', function(){
   layer.open({
-  type: 1,
-  title:' ',
-  area: ['350px', '180px'],
-  btn:['保存'],
-  shadeClose: true, //点击遮罩关闭
-  content: '\<\div style="padding:20px;"><div class="form-inline"><lable>新昵称：</label><input type="text" maxlength="16" id="newNickName" name="newNickName" class="form-control"/></div>\<\/div>',
+  btn:['修改'],
+  content: '\<div><div class="panel-body form-inline"><input type="text" maxlength="16" id="newNickName" name="newNickName" placeholder="新昵称" class="form-control"/></div></div>',
   yes:function (index) {
-      var newNickName = $("#newNickName").val()
+      var newNickName = $("#newNickName").val();
       if (newNickName.trim().length > 0) {
           $.post('/updateNickName',{newNickName:newNickName},function(data) {
               if (data == 0) {
-                  layer.msg('修改失败,请稍后再试', {icon: 5});
+                  ShowMess('修改失败,请稍后再试');
               }
               else {
                layer.closeAll();
-                layer.msg('修改成功,请刷刷新页面', {icon: 1});
+                ShowMess('修改成功,请刷刷新页面');
               }
           })
       }
       else{
-          layer.msg('新昵称不可为空', {icon: 5});
+          ShowMess('新昵称不可为空');
       }
   }
   });
@@ -95,18 +91,13 @@ $('#updateNickName').on('click', function(){
 //验证邮箱
 $('#checkedEmail').on('click', function(){
   layer.open({
-  type: 1,
-  title:' ',
-  area: ['400px', '220px'],
-  shadeClose: true, //点击遮罩关闭
-  content: '<div style="padding:20px;"><div class="form-horizontal">' +
-           '<div class="form-group form-group-sm">'+
-           '<label class="col-sm-4 text-right control-label">邮箱：</label><div class="col-sm-8 text-left"><input type="hidden" id="odEmail" value="{{userInfo.userEmail}}">{{userInfo.userEmail}}&nbsp;&nbsp;<button type="button" class="btn btn-primary btn-xs" id="sendYzm" onclick="sendYZM(0)" >发送验证码</button> </div>'+
-           '</div><div class="form-group form-group-sm">'+
-           '<label class="col-sm-4 text-right control-label">验证码：</label><div class="col-sm-8 text-left"><input type="text" id="txtYzm" class="form-control"/></div>'+
-           '</div>'+
-           '<div class="col-sm-12 text-center"><button type="button" onclick="CheckedEmail(0)" class="btn btn-block">验证</button></div>'+
-           '</div></div>'
+  btn:['验证'],
+  content: '<div ><div class="panel-body">' +
+           '<input type="hidden" id="odEmail" value="{{userInfo.userEmail}}"><input type="text" id="txtYzm" placeholder="验证码" class="form-control"/>&nbsp;&nbsp;<button type="button" class="btn btn-primary" id="sendYzm" onclick="sendYZM(0)" >发送验证码</button>'+
+           '</div></div>',
+      yes:function (index) {
+          CheckedEmail(0)
+      }
   });
 });
 //发送验证码
@@ -116,18 +107,18 @@ function  sendYZM(oid) {
     if (oid == 1) {
         var newEmail = $("#newEmail").val();
         if (newEmail.trim().length <= 0) {
-            layer.msg('新邮箱不可为空....', {icon: 5});
+            ShowMess('新邮箱不可为空');
             return;
         }
         ;
         var myreg = /^([a-zA-Z0-9]+[_|\_|\.]?)*[a-zA-Z0-9]+@([a-zA-Z0-9]+[_|\_|\.]?)*[a-zA-Z0-9]+\.[a-zA-Z]{2,3}$/;
         if (!myreg.test(newEmail)) {
-            layer.alert('请输入有效的邮箱', {icon: 5});
+            ShowMess('请输入有效的邮箱');
             return;
         }
         var oldEmail = $("#oldEmail").val();
         if (oldEmail == newEmail.trim()) {
-              layer.msg('新旧邮箱一样,修改失败', {icon: 5});
+             ShowMess('新旧邮箱一样,无需失修');
             return;
         }
        data = {typ:oid,email:newEmail};
@@ -148,16 +139,19 @@ function  sendYZM(oid) {
             },1000);
         }
         else{
-             layer.msg('发送失败,请稍后再试....', {icon: 5});
+            ShowMess('发送失败,请稍后再试');
         };
 
     });
 };
 //验证输入的验证码是否正确
 function  CheckedEmail(otp) {
-    var email = "None"
+    var email = "None";
     if (otp == 1) {
         email = $("#newEmail").val()
+        if (email.trim().length<=0){
+             ShowMess('新邮箱不可为空');
+        }
     }
     else{
          email = $("#odEmail").val()
@@ -165,7 +159,7 @@ function  CheckedEmail(otp) {
 
     var txtYzm = $("#txtYzm").val();
     if (txtYzm.trim().length<=0){
-        layer.msg('验证码不可为空,请输入', {icon: 5});
+       ShowMess('验证码不可为空,请输入');
         return;
     }
     $.get("/checkedEmail/"+txtYzm+"/"+email,function (result ) {
@@ -173,7 +167,7 @@ function  CheckedEmail(otp) {
             window.location = window.location;
         }
         else {
-             layer.msg('验证失败,请稍后再试....', {icon: 5});
+         ShowMess('验证失败,请稍后再试');
         }
         $("#newEmail").attr("disabled",false);
     })
@@ -181,18 +175,14 @@ function  CheckedEmail(otp) {
 //修改邮箱
 $("#updateEmail").on('click', function(){
   layer.open({
-  type: 1,
-  title:' ',
-  area: ['400px', '220px'],
-  shadeClose: true, //点击遮罩关闭
-  content: '<div style="padding:20px;"><div class="form-horizontal">' +
-           '<div class="form-group form-group-sm">'+
-           '<label class="col-sm-3 text-right control-label">新邮箱：</label><div class="col-sm-9 text-left"><input type="hidden" id="oldEmail" value="{{userInfo.userEmail}}" > <input type="email" id="newEmail" name="newEmail" /> &nbsp;&nbsp;<button type="button" class="btn btn-primary btn-xs" id="sendYzm" onclick="sendYZM(1)" >发送验证码</button> </div>'+
-           '</div><div class="form-group form-group-sm">'+
-           '<label class="col-sm-3 text-right control-label">验证码：</label><div class="col-sm-9 text-left"><input type="text" id="txtYzm" class="form-control" /></div>'+
-           '</div>'+
-           '<div class="col-sm-12 text-center"><button type="button" onclick="CheckedEmail(1)" class="btn btn-block">验证</button></div>'+
-           '</div></div>'
+      btn:['验证'],
+      content: '<div class="panel-body">' +
+               '<input type="hidden" id="oldEmail" value="{{userInfo.userEmail}}" > <input type="email" id="newEmail" placeholder="新邮箱" class="form-control" name="newEmail" /> &nbsp;&nbsp;<button type="button" class="btn btn-primary" id="sendYzm" onclick="sendYZM(1)" >发送验证码</button> '+
+               '<input type="text" id="txtYzm" placeholder="验证码" class="form-control" />'+
+               '</div>',
+      yes:function (index) {
+          CheckedEmail(1)
+      }
   });
 });
 
@@ -226,41 +216,42 @@ function UpdateEmail () {
         //新密码
         var confNewPass = $('#confNewPass').val();
         if (oldPass.trim().length<=0){
-            layer.msg('旧密码不可为空', {icon: 5});
+            ShowMess('旧密码不可为空');
             return;
         };
         if (newPass.trim().length<=0){
-            layer.msg('新密码不可为空', {icon: 5});
+            ShowMess('新密码不可为空');
             return;
         };
         if(confNewPass.trim().length<=0){
-            layer.msg('确认新密码不可为空', {icon: 5});
+            ShowMess('确认新密码不可为空');
             return;
         };
         if (newPass.trim() !=confNewPass.trim()){
-            layer.msg('两次新密码不一致,请重新输入', {icon: 5});
+            ShowMess('两次新密码不一致,请重新输入');
             return;
         };
         var data ={oldPass:oldPass,newPass:newPass};
         $.post("/updatePass",data,function (result) {
             if (result =="0"){
-                 layer.msg('旧密码不可为空', {icon: 5});
+                 ShowMess('旧密码不可为空');
                  return;
             }
              if (result =="-1"){
-                 layer.msg('新密码不可为空', {icon: 5});
+                ShowMess('新密码不可为空');
                  return;
             }
             if(result == "2"){
-                layer.msg('旧密码错误', {icon: 5});
+                 ShowMess('旧密码错误');
                  return;
             }
             else{
                 layer.closeAll();
-                layer.msg('修改成功,下次登陆使用新密码', {icon: 1});
+                ShowMess('修改成功,下次登陆使用新密码');
                  return;
             }
         })
     };
+
 </script>
 {%endblock%}
