@@ -37,13 +37,16 @@ def SystemUpdateNickName(nickName):
         return "1",200
     else:
        return "0",200
-def SystemUpdatePassword(oldPass,newPass):
+def SystemUpdatePassword(oldPass,newPass,confNewPass):
     if oldPass is None:
         # 旧密码为空
         return "0"
     if newPass is None:
         # 新密码为空
         return "-1"
+    if newPass != confNewPass:
+        #两次密码不一致
+        return "-2"
     hasbPass = hashlib.sha256()
     hasbPass.update(oldPass.encode('utf8'))
     shaPass = hasbPass.hexdigest()

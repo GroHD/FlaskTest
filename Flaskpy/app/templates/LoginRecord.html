@@ -1,65 +1,61 @@
 {% extends "base.html"%}
 {%block content%}
 {%if userInfo%}
-    <!--头像-->
-    {%include "baseHeadImg.html" ignore missing%}
-    <div class="panel-body row" style="min-width:500px">
-        <!--左侧导航-->
-        <div class="col-xs-4 " >
-        {% include "baseLeftMenu.html" ignore missing%}
-        </div>
+<!--头像-->
+{%include "baseHeadImg.html" ignore missing%}
+<div class="panel-body" >
 
-        <div  class="col-xs-7"  style="float:left;margin-left: 10px">
-           <table class="table table-bordered">
+    <div class="text-center">
+        <table class="table table-bordered">
             <tr>
-               <td >序号</td><td >登陆IP</td><td >登陆时间</td>
+                <td style="width: 15%">序号</td><td style="width: 40%">登陆IP</td><td style="width: 50%">登陆时间</td>
             </tr>
-               {%for loginUserInfo in loginUserIp%}
-                   <tr>
-                       <td >{{loop.index}}</td><td >{{loginUserInfo.LoginIp}}</td><td >{{loginUserInfo.LoginTime}}</td>
-                    </tr>
-               {%endfor%}
-           </table>
-            <nav aria-label="Page navigation">
-  <ul class="pagination">
+            {%for loginUserInfo in loginUserIp%}
+            <tr>
+                <td >{{loop.index}}</td><td >{{loginUserInfo.LoginIp}}</td><td >{{loginUserInfo.LoginTime}}</td>
+            </tr>
+            {%endfor%}
+        </table>
+        <nav aria-label="Page navigation">
+            <ul class="pagination">
 
-        {%if pageInde >1%}
-       <li>
-          <a href="/LoginRecord/1"  aria-label="Previous">
-            <span aria-hidden="true">&laquo;</span>
-          </a>
-       </li>
-        {%else%}
-       <li class="disabled">
-          <a  aria-label="Previous">
-            <span aria-hidden="true">&laquo;</span>
-          </a>
-       </li>
-        {%endif%}
+                {%if pageInde >1%}
+                <li>
+                    <a href="/LoginRecord/1"  aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+                {%else%}
+                <li class="disabled">
+                    <a  aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+                {%endif%}
 
-    {%for pageIndex in pageCount%}
-        {%if pageIndex == pageInde%}
-            <li class="active"><a>{{pageIndex}}</a></li>
-        {%else%}
-            <li><a href="/LoginRecord/{{pageIndex}}">{{pageIndex}}</a></li>
-        {%endif%}
-    {%endfor%}
-      {%if pageInde < PageSum %}
-        <li>
-          <a href="/LoginRecord/{{PageSum}}" aria-label="Next">
-            <span aria-hidden="true">&raquo;</span>
-          </a>
-        </li>
-      {%else%}
-        <li class="disabled">
-          <a aria-label="Next">
-            <span aria-hidden="true">&raquo;</span>
-          </a>
-        </li>
-      {%endif%}
-  </ul>
-</nav>
-        </div>
+                {%for pageIndex in pageCount%}
+                {%if pageIndex == pageInde%}
+                <li class="active"><a>{{pageIndex}}</a></li>
+                {%else%}
+                <li><a href="/LoginRecord/{{pageIndex}}">{{pageIndex}}</a></li>
+                {%endif%}
+                {%endfor%}
+                {%if pageInde < PageSum %}
+                <li>
+                    <a href="/LoginRecord/{{PageSum}}" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+                {%else%}
+                <li class="disabled">
+                    <a aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+                {%endif%}
+            </ul>
+        </nav>
     </div>
+</div>
 {%endif%}
 {%endblock%}

@@ -49,7 +49,7 @@ def LoginRecord(pageIndex):
     if g.user:
         if not pageIndex:
             pageIndex = 1
-        pageCount = 10
+        pageCount = 6
         pageIndex = int(str(pageIndex))
         pageStart = (pageIndex-1)*pageCount
         recoreds = db.session.query(LoginUserIp).filter(LoginUserIp.userId == g.user.id).order_by(LoginUserIp.id.desc())
@@ -119,7 +119,8 @@ def UpdatePassword():
     if g.user:
         oldPass = request.values.get('oldPass')
         newPass = request.values.get('newPass')
-        return Flask_SystemUser.SystemUpdatePassword(oldPass,newPass)
+        confNewPass = request.values.get('confNewPass')
+        return Flask_SystemUser.SystemUpdatePassword(oldPass,newPass,confNewPass)
     else:
         return "Login Time Out"
 #菜单Menu
