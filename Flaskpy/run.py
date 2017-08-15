@@ -4,7 +4,7 @@
 Name:HD
 '''
 from app import  app
-app.run(debug=True,host='192.168.10.254' )
+app.run(debug=True)
 
 r'''
     导出项目所需要的包

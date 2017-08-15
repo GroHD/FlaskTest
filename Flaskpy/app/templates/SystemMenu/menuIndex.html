@@ -63,12 +63,12 @@
     function SaveMenu(menuType){
         var menuName = $("#menuName").val();
         if (menuName.trim().length<=0){
-            layer.msg('菜单名称不可为空', {icon: 5});
+           layer.open({content:'菜单名称不可为空',skin: 'footer'});
             return;
         }
         var menuUrl = $("#menuUrl").val();
         if (menuUrl.trim().length<=0){
-            layer.msg('菜单URL不可为空', {icon: 5});
+            layer.open({content:'菜单URL不可为空',skin: 'footer'});
             return;
         }
         var menuEnable = 0;
@@ -78,10 +78,10 @@
         var data  ={menuName:menuName,menuUrl:menuUrl,menuEnable:menuEnable,menuType:menuType};
         $.post("/SystemMenuAdd",data,function (result) {
             if (result == "1"){
-                layer.msg('菜单名称不可为空', {icon: 5});
+                layer.open({content:'菜单名称不可为空',skin: 'footer'});
             }
             else if (result == "2"){
-                layer.msg('菜单URL不可为空', {icon: 5});
+                layer.open({content:'菜单URL不可为空',skin: 'footer'});
             }
             else if (result == "0"){
                 if (menuType<=0){
@@ -94,7 +94,7 @@
                 }
             }
             else{
-                layer.msg(result, {icon: 5});
+                layer.open({content:result,skin: 'footer'});
             }
         })
     };
@@ -136,10 +136,10 @@
         var state = $(obj).attr("menuState");
         $.post("/menuState",{id:id,state:state},function(result) {
             if (result == "-1") {
-                layer.msg('修改失败,请稍后再试!', {icon: 5});
+                layer.open({content:'修改失败,请稍后再试!',skin: 'footer'});
             }
             else if (result == "-2") {
-                layer.msg('服务器错误,请联系管理员!', {icon: 5});
+                layer.open({content:'服务器错误,请联系管理员!',skin: 'footer'});
             }
             else if (result == "0") {
 
@@ -153,7 +153,7 @@
                        $(obj).attr('menuState','True');
                        $("#menu_"+id+"_Disabel").html('启用');
                 };
-                layer.msg('修改成功', {icon: 0});
+                layer.open({content:'修改成功',skin: 'footer'});
             }
             else {
                  layer.msg(result, {icon: 5});
@@ -165,12 +165,12 @@
     function MenuDeleted(oid) {
         $.post('/menuDelete',{id:oid},function (result) {
             if (result == "-1"){
-                  layer.msg('删除失败,请稍后再试!', {icon: 5});
+                  layer.open({content:'删除失败,请稍后再试!',skin: 'footer'});
             }
             else if (result=="0"){
                  $("#menu_"+oid).remove()
                  $("#new_menuId").html(oid);
-                 layer.msg('删除成功', {icon: 0});
+                 layer.open({content:'删除成功',skin: 'footer'});
             }
             else{
                  layer.msg(result, {icon: 5});
