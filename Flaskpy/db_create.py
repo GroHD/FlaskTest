@@ -15,9 +15,15 @@ adminUser = db.session.query(models.LoginUser).filter(models.LoginUser.userName=
 if not adminUser:
     #进行加密
     pas = hashlib.sha256()
-    pas.update(b'houge9999991') #要加密的内容
+    pas.update(b'admin') #要加密的内容
     varPass = pas.hexdigest()# 取到加密后的密文
     u = models.LoginUser(loginName='admin',loginPass=varPass,userEmail='1105061266@qq.com',loginCount=0,userName=str('超级管理员'))
+    menuNotes = models.SystemMenu(menuName='笔记',menuUrl='Notes')
+    menuSoft = models.SystemMenu(menuName='软件', menuUrl='Software')
+    menuMate = models.SystemMenu(menuName='资料', menuUrl='Material')
     db.session.add(u)
+    db.session.add(menuNotes)
+    db.session.add(menuSoft)
+    db.session.add(menuMate)
     db.session.commit()
     db.session.remove()
