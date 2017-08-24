@@ -10,7 +10,12 @@ from . import db,models
 def SystemMenu():
     menuAll = db.session.query(models.SystemMenu).order_by(models.SystemMenu.id.asc()).all();
     maxId = len(menuAll)
-    maxId = maxId+1
+    if maxId >0:
+        objMenu = menuAll[maxId-1]
+        maxId = objMenu.id + 1
+    else:
+        maxId = maxId +1
+
     return render_template('/SystemMenu/menuIndex.html',title='菜单管理',userInfo=g.user,newMenuId=maxId,sysMenuAll = menuAll,menu =g.menu)
 #修改添加菜单
 def SystemMenuAdd(menuName,menuUrl,menuChecked,menuType):

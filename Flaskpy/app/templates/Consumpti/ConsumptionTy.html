@@ -1,0 +1,94 @@
+{% extends "base.html"%}
+{% block content%}
+{%if userInfo%}
+<!--头像-->
+{%include "baseHeadImg.html" ignore missing%}
+<div class="panel-body" >
+
+    <div class="text-center">
+        <table id="consunpti" class="table table-bordered">
+            <tr>
+                <td style="width: 15%">序号</td><td style="width: 25%">类型名称</td><td style="width: 20%">启用</td><td style="width: 35%">操作</td>
+            </tr>
+            {%for item in Consumption%}
+            <tr id="menu_{{item.id}}">
+                <td >{{item.id}}</td><td >{{item.typeName}}</td><td id="menu_{{item.id}}_Disabel">{%if item.typeDisable %}
+                启用
+                {%else%}
+                禁用
+                {%endif%}</td><td><a href="#" onclick="Update_Menu({{item.id}})">修改</a>|<a href="#" onclick="MenuDeleted({{item.id}})">删除</a>|<a href="#" menuId="{{item.id}}" menuState="{{item.typeDisable}}" onclick="UpdateMenuState(this)">
+                {%if item.typeDisable %}
+                禁用
+                {%else%}
+                启用
+                {%endif%}
+            </a></td>
+            </tr>
+            {%endfor%}
+            <!--添加-->
+            <tr id="menu_Add">
+                <td>
+                    <h5 id="new_menuId">
+                        {{maxId}}
+                    </h5>
+                </td>
+                <td>
+                    <input type="text" id="menuName" name="menuName" class="form-control"placeholder="类型名称"/>
+                </td>
+                <td>
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" id="menuEnable" value="1" name="menuEnable"/>启用
+                        </label>
+                    </div>
+                </td>
+                <td>
+                    <button class="btn btn-group-sm btn-primary" onclick="SaveMenu(0)">保存</button>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+{%endif%}
+{%endblock%}
+{% block bottom%}
+<script type="text/javascript">
+
+    function SaveMenu(obj) {
+        //consunpti
+        var optHtml = $("#menu_Add").html();
+        optHtml="<tr id=\"menu_Add\">"+optHtml+"</tr>"
+
+
+        var menuName = $("#menuName").val();
+        if (menuName.trim().length <= 0) {
+            layer.open({content: '类型名称不可为空', skin: 'footer'});
+            return;
+        }
+        var menuEnable = 0;
+        if (document.getElementById("menuEnable").checked == true) {
+            menuEnable = 1;
+        }
+        var data = {menuName:menuName,menuEnable:menuEnable,typ:obj}
+        $.post('/ConsumPtionInsert',data,function(result) {
+            if (result == "0") {
+                var new_menuId = $("#new_menuId").html();
+                layer.open({content:'添加成功',skin: 'footer'});
+                $("#menu_Add").remove();
+                var tdHtml = '<tr id="menu_'+new_menuId+'"><td >'+new_menuId+'</td><td >'+menuName+'</td><td id="menu_'+new_menuId+'_Disabel">'+(menuEnable==0?"禁用":"启用")+'</td><td><a href="#" onclick="Update_Menu('+new_menuId+')">修改</a>|<a href="#" onclick="MenuDeleted('+new_menuId+')">删除</a>|<a href="#" menuId="'+new_menuId+'" menuState="'+menuEnable+'" onclick="UpdateMenuState(this)">'+(menuEnable==0?"启用":"禁用")+'</a></td></tr>'
+                $("#consunpti").append(tdHtml);
+                $("#consunpti").append(optHtml);
+            }
+            else if (result =="-1"){
+                layer.open({content:'类型已存在,请修改',skin: 'footer'});
+            }
+            else if (result =="-2"){
+                layer.open({content:'类型不可为空,请修改',skin: 'footer'});
+            }
+        });
+    }
+
+
+
+</script>
+{%endblock%}

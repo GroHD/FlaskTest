@@ -3,7 +3,7 @@
 '''
 Name:HD
 '''
-from . import app,db,Flask_Email,Flask_Menu,Flask_SystemUser
+from . import app,db,Flask_Email,Flask_Menu,Flask_SystemUser,Flask_Consumpti
 from flask import  render_template,redirect,url_for,session,flash,g,request
 from .forms import LoginForm
 from .models import LoginUser,LoginUserIp,SystemMenu
@@ -170,6 +170,25 @@ def SystemMenuDelete():
     else:
         return "Login Time Out...."
 
+#消费类型
+@app.route('/ConsumptionTy/<pageIndex>',methods=['GET'])
+def ConsumptiTy(pageIndex):
+    if g.user is not None:
+        return Flask_Consumpti.GetComsumPtiList(pageIndex)
+    else:
+        return redirect(url_for('index'))
+@app.route('/ConsumPtionInsert',methods=['POST','GET'])
+def ConsumPtionInsert():
+    if g.user is not None:
+        #类型名称
+        menuName = request.values.get('menuName')
+        #是否启用
+        menuEnable = request.values.get('menuEnable')
+        #id 如果是0则表示是添加,否则就是修改
+        typ = request.values.get('typ')
+        return Flask_Consumpti.InsertComsumPti(menuName,menuEnable,typ)
+    else:
+        return 'Login Time Out'
 #404错误
 @app.errorhandler(404)
 def error_NotPage(e):
@@ -177,7 +196,7 @@ def error_NotPage(e):
 #500错误
 @app.errorhandler(500)
 def error_ServerError(e):
-    return "Error!Server!Error!",500
+    return "Error!Server!Error!"
 
 #405是什么?忘记了
 @app.errorhandler(405)
@@ -199,13 +218,7 @@ def getCurrent_user():
         return user
     else:
         return None
-
+#拿到要显示的菜单,如果是0则是禁用的
 def getMenu():
     menu = db.session.query(models.SystemMenu).filter(models.SystemMenu.menuDisable == 1).all()
     g.menu = menu
-
-
-#替换模板
-@contextfunction
-def replace_Temp(context):
-    pass;
