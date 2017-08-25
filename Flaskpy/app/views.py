@@ -177,6 +177,7 @@ def ConsumptiTy(pageIndex):
         return Flask_Consumpti.GetComsumPtiList(pageIndex)
     else:
         return redirect(url_for('index'))
+#添加消费类型
 @app.route('/ConsumPtionInsert',methods=['POST','GET'])
 def ConsumPtionInsert():
     if g.user is not None:
@@ -189,6 +190,24 @@ def ConsumPtionInsert():
         return Flask_Consumpti.InsertComsumPti(menuName,menuEnable,typ)
     else:
         return 'Login Time Out'
+#修改消费类型状态
+@app.route('/updateState',methods=['POST'])
+def ConsumPtionUpdateState():
+    if g.user is not None:
+        menuState = request.values.get('menuStateType')
+        conId = request.values.get('id')
+        return Flask_Consumpti.UpdateComsumPtiState(menuState,conId);
+    else:
+        return 'Login Time Out'
+#删除消费类型
+@app.route('/deleteConsun',methods=['POST'])
+def ConsumPtionDelete():
+    if g.user is not None:
+        cid=  request.values.get('id')
+        return Flask_Consumpti.DeleteComsumPtion(cid)
+    else:
+        return 'Login Time Out'
+
 #404错误
 @app.errorhandler(404)
 def error_NotPage(e):

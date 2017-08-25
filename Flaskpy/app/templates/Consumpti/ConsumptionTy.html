@@ -71,13 +71,15 @@
         }
         var data = {menuName:menuName,menuEnable:menuEnable,typ:obj}
         $.post('/ConsumPtionInsert',data,function(result) {
-            if (result == "0") {
-                var new_menuId = $("#new_menuId").html();
+            if (result >0) {
                 layer.open({content:'添加成功',skin: 'footer'});
+                var new_menuId = $("#new_menuId").html();
+
                 $("#menu_Add").remove();
-                var tdHtml = '<tr id="menu_'+new_menuId+'"><td >'+new_menuId+'</td><td >'+menuName+'</td><td id="menu_'+new_menuId+'_Disabel">'+(menuEnable==0?"禁用":"启用")+'</td><td><a href="#" onclick="Update_Menu('+new_menuId+')">修改</a>|<a href="#" onclick="MenuDeleted('+new_menuId+')">删除</a>|<a href="#" menuId="'+new_menuId+'" menuState="'+menuEnable+'" onclick="UpdateMenuState(this)">'+(menuEnable==0?"启用":"禁用")+'</a></td></tr>'
+                var tdHtml = '<tr id="menu_'+new_menuId.trim()+'"><td >'+new_menuId+'</td><td >'+menuName+'</td><td id="menu_'+new_menuId+'_Disabel">'+(menuEnable==0?"禁用":"启用")+'</td><td><a href="#" onclick="Update_Menu('+new_menuId+')">修改</a>|<a href="#" onclick="MenuDeleted('+new_menuId+')">删除</a>|<a href="#" menuId="'+new_menuId+'" menuState="'+menuEnable+'" onclick="UpdateMenuState(this)">'+(menuEnable==0?"启用":"禁用")+'</a></td></tr>'
                 $("#consunpti").append(tdHtml);
                 $("#consunpti").append(optHtml);
+                $("#new_menuId").html(result);
             }
             else if (result =="-1"){
                 layer.open({content:'类型已存在,请修改',skin: 'footer'});
@@ -85,10 +87,43 @@
             else if (result =="-2"){
                 layer.open({content:'类型不可为空,请修改',skin: 'footer'});
             }
+            else{
+                 layer.open({content:result,skin: 'footer'});
+            }
         });
     }
 
-
-
+    function UpdateMenuState(obj) {
+        var menuStateType = $(obj).attr("menuState");
+        var typId = $(obj).attr("menuId");
+        var data = {menuStateType:menuStateType,id:typId};
+        $.post('/updateState',data,function(result){
+            if (result == "-1"){
+                layer.open({content: '修改失败,请稍后再试', skin: 'footer'});
+            }
+            else if (result =="0"){
+                $(obj).attr("menuState",(menuStateType=="False"?"True":"False"));
+                $(obj).html((menuStateType =="False"?" 禁用":" 启用"));
+                $("#menu_"+typId+"_Disabel").html((menuStateType =="False"?"启用":"禁用"));
+                layer.open({content: '修改成功', skin: 'footer'});
+            }
+            else{
+                layer.open({content: result, skin: 'footer'});
+            }
+        })
+    }
+    //删除
+    function MenuDeleted(id){
+        $.post('/deleteConsun',{id:id},function(result){
+                if (result >0){
+                    layer.open({content: '删除成功', skin: 'footer'});
+                    $("#menu_"+id).remove();
+                    $("#new_menuId").html(result);
+                }
+                else{
+                   layer.open({content: result, skin: 'footer'});
+                }
+        })
+    }
 </script>
 {%endblock%}
