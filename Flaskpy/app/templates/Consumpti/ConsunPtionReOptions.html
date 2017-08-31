@@ -1,50 +1,88 @@
 {% extends "base.html"%}
 {% block content%}
 <div class="panel-body">
-    <table id="dayNum" class="table table-bordered">
-        <tr>
-            <td id="day_1"></td><td id="day_2"></td><td id="day_3"></td><td id="day_4"></td><td id="day_5"></td><td id="day_6"></td><td id="day_7"></td>
-        </tr>
-        <tr >
-            <td id="day_8"></td><td id="day_9"></td><td id="day_10"></td><td id="day_11"></td><td id="day_12"></td><td id="day_13"></td><td id="day_14"></td>
-        </tr>
-        <tr>
-            <td id="day_15"></td><td id="day_16"></td><td id="day_17"></td><td id="day_18"></td><td id="day_19"></td><td id="day_20"></td><td id="day_21"></td>
-        </tr>
-        <tr>
-            <td id="day_22"></td><td id="day_23"></td><td id="day_24"></td><td id="day_25"></td><td id="day_26"></td><td id="day_27"></td><td id="day_28"></td>
-        </tr>
-        <tr id="endHtml" >
-            <td id="day_29"></td><td id="day_30"></td><td id="day_31"></td><td></td><td></td><td></td><td></td>
-        </tr>
-    </table>
+        <table id="dayNum" class="table table-bordered">
+            <tr >
+                <td id="day_1"></td><td id="day_2"></td><td id="day_3"></td><td id="day_4"></td><td id="day_5"></td><td id="day_6"></td>
+            </tr>
+            <tr >
+                <td id="day_7"></td><td id="day_8"></td><td id="day_9"></td><td id="day_10"></td><td id="day_11"></td><td id="day_12"></td>
+            </tr>
+            <tr >
+                </td><td id="day_16"></td><td id="day_17"></td><td id="day_18"></td> <td  id="day_19"></td><td  id="day_20"></td><td id="day_21"></td>
+            </tr>
+            <tr >
+               <td id="day_22"></td><td id="day_23"></td><td id="day_24"></td><td id="day_25"></td><td id="day_26"></td><td id="day_27"></td>
+            </tr>
+            <tr >
+                <td id="day_28"></td><td id="day_29"></td><td id="day_30"></td><td id="day_31"></td><td></td><td></td>
+            </tr>
+        </table>
+        <div class="row">
+            <div class="col-xs-6 text-left">
+                <button class="btn btn-default" onclick="upMonth()">上个月</button>&nbsp;&nbsp;&nbsp;<button class="btn btn-default" onclick="ResultMonth()">当月</button>&nbsp;&nbsp;&nbsp;<button class="btn btn-info disabled">图表</button>&nbsp;&nbsp;&nbsp;<button class="btn btn-success" >图形</button>
+            </div>
+            <div class="col-xs-6 text-right">
+                <button class="btn btn-default" onclick ="dowMonth()">下个月</button>
+            </div>
+
+        </div>
 </div>
 {%endblock%}
 {%block bottom%}
 <script type="text/javascript">
-    var monthsDayNum =[31,28,31,30,31,30,31,31,30,31,30,31]
+    var monthsDayNum =[31,28,31,30,31,30,31,31,30,31,30,31];
+    var tmpMonth = "";
     $(function () {
         var pYear=new Date().getFullYear();
         var pMonth = new Date().getMonth();
-        if((pYear%4==0 && pYear%100!=0)||(pYear%100==0 && pYear%400==0)) {
-            monthsDayNum[1] = 29
-        }
-        else{
-            monthsDayNum[1] = 28
-        }
-        monDays = monthsDayNum[pMonth];
-        if (monDays<29){
-            $("#endHtml").attr("style","display:none")
-        }
-
-        for (var i = 1 ; i <= monthsDayNum[pMonth];++i){
-            $("#day_"+i).attr('style','width: 100px;height: 100px;cursor:pointer').attr('onclick','ShowCaseDetal("'+(pYear+'-'+(pMonth+1)+'-'+i)+'")');
-            $("#day_"+i).html('<lable style="display: flex;bottom:0px;" >'+((pMonth+1)+'月'+i+'日')+'</lable></br><label style="color: #FF5A2C;">消费：0.00元</label></br><label style="color:#00BBB1">收入：0.00元</label>');
-        }
-    })
+        LoadHtml(pYear,pMonth);
+    });
     function ShowCaseDetal(obj) {
         alert(obj)
     }
+    //上个月
+    function upMonth() {
+        var temDate = new Date(tmpMonth);
+        temDate.setMonth(temDate.getMonth()-1)
+        LoadHtml(temDate.getFullYear(),temDate.getMonth())
+        tmpMonth = temDate.getFullYear()+"-"+(temDate.getMonth()+1);
+    }
+    //下个月
+    function dowMonth() {
+        var temDate = new Date(tmpMonth);
+        temDate.setMonth(temDate.getMonth()+1)
+        LoadHtml(temDate.getFullYear(),temDate.getMonth())
+        tmpMonth = temDate.getFullYear()+"-"+(temDate.getMonth());
+    }
 
+    //本月
+    function ResultMonth(){
+        var temDate = new Date();
+        LoadHtml(temDate.getFullYear(),temDate.getMonth())
+        tmpMonth = temDate.getFullYear()+"-"+(temDate.getMonth()+1);
+    }
+
+    function LoadHtml(pYear,pMonth) {
+        clearHtml();
+        if ((pYear % 4 == 0 && pYear % 100 != 0) || (pYear % 100 == 0 && pYear % 400 == 0)) {
+            monthsDayNum[1] = 29
+        }
+        else {
+            monthsDayNum[1] = 28
+        }
+        monDays = monthsDayNum[pMonth];
+        tmpMonth = pYear+"-"+(pMonth+1);
+        for (var i = 1 ; i <= monthsDayNum[pMonth];++i){
+            $("#day_"+i).attr('style','width: 100px;height: 100px;cursor:pointer').attr('onclick','ShowCaseDetal("'+(pYear+'-'+(pMonth+1)+'-'+i)+'")');
+            $("#day_"+i).html('<lable style="display: flex;bottom:0px;" >'+pYear+'年'+((pMonth+1)+'月'+i+'日')+'</lable></br><label style="color: #FF5A2C;">消费：0.00元</label></br><label style="color:#00BBB1">收入：0.00元</label>');
+        }
+
+    }
+    function clearHtml() {
+        for (var i = 1 ; i <= 31;++i) {
+            $("#day_"+i).html('');
+        }
+    }
 </script>
 {%endblock%}
