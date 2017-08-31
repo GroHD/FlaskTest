@@ -208,6 +208,14 @@ def ConsumPtionDelete():
     else:
         return 'Login Time Out'
 
+#添加消费
+@app.route('/ConsumptionRe',methods=['GET'])
+def ConsunPtionRe():
+    if g.user is not None:
+        return  render_template('/Consumpti/ConsunPtionReOptions.html',title='消费记录',menu=g.menu)
+    else:
+        return redirect(url_for('index'))
+
 #404错误
 @app.errorhandler(404)
 def error_NotPage(e):
@@ -241,3 +249,6 @@ def getCurrent_user():
 def getMenu():
     menu = db.session.query(models.SystemMenu).filter(models.SystemMenu.menuDisable == 1).all()
     g.menu = menu
+
+
+#http://echarts.baidu.com/demo.html#mix-zoom-on-value
