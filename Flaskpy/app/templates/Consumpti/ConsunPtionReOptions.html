@@ -1,33 +1,66 @@
 {% extends "base.html"%}
 {% block content%}
 <div class="panel-body">
-        <table id="dayNum" class="table table-bordered">
-            <tr >
-                <td id="day_1"></td><td id="day_2"></td><td id="day_3"></td><td id="day_4"></td><td id="day_5"></td><td id="day_6"></td>
-            </tr>
-            <tr >
-                <td id="day_7"></td><td id="day_8"></td><td id="day_9"></td><td id="day_10"></td><td id="day_11"></td><td id="day_12"></td>
-            </tr>
-            <tr >
-                </td><td id="day_16"></td><td id="day_17"></td><td id="day_18"></td> <td  id="day_19"></td><td  id="day_20"></td><td id="day_21"></td>
-            </tr>
-            <tr >
-               <td id="day_22"></td><td id="day_23"></td><td id="day_24"></td><td id="day_25"></td><td id="day_26"></td><td id="day_27"></td>
-            </tr>
-            <tr >
-                <td id="day_28"></td><td id="day_29"></td><td id="day_30"></td><td id="day_31"></td><td></td><td></td>
-            </tr>
-        </table>
-        <div class="row">
-            <div class="col-xs-6 text-left">
-                <button class="btn btn-default" onclick="upMonth()">上个月</button>&nbsp;&nbsp;&nbsp;<button class="btn btn-default" onclick="ResultMonth()">当月</button>&nbsp;&nbsp;&nbsp;<button class="btn btn-info disabled">图表</button>&nbsp;&nbsp;&nbsp;<button class="btn btn-success" >图形</button>
-            </div>
-            <div class="col-xs-6 text-right">
-                <button class="btn btn-default" onclick ="dowMonth()">下个月</button>
-            </div>
-
+    <table id="dayNum" class="table table-bordered">
+        <tr >
+            <td id="day_1"></td><td id="day_2"></td><td id="day_3"></td><td id="day_4"></td><td id="day_5"></td><td id="day_6"></td>
+        </tr>
+        <tr >
+            <td id="day_7"></td><td id="day_8"></td><td id="day_9"></td><td id="day_10"></td><td id="day_11"></td><td id="day_12"></td>
+        </tr>
+        <tr >
+            <td id="day_13"></td><td id="day_14"></td><td id="day_15"></td><td id="day_16"></td><td id="day_17"></td><td id="day_18"></td>
+        </tr>
+        <tr >
+            </td><td id="day_19"></td><td id="day_20"></td><td id="day_21"></td> <td  id="day_22"></td><td  id="day_23"></td><td id="day_24"></td>
+        </tr>
+        <tr >
+            <td id="day_25"></td><td id="day_26"></td><td id="day_27"></td><td id="day_28" ></td><td id="day_29" ></td><td id="day_30" ></td>
+        </tr>
+        <tr >
+            <td id="day_31">&nbsp;</td>
+        </tr>
+    </table>
+    <div class="row">
+        <div class="col-xs-4 text-left">
+            <button class="btn btn-default" onclick="upMonth()">上个月</button>&nbsp;&nbsp;&nbsp;<button class="btn btn-default" onclick="ResultMonth()">本月</button>
         </div>
+        <div class="col-xs-4 text-center">
+            <button class="btn btn-info disabled">图表</button>&nbsp;&nbsp;&nbsp;<button class="btn btn-success" >图形</button>
+        </div>
+        <div class="col-xs-4 text-right">
+            <button class="btn btn-default" onclick ="dowMonth()">下个月</button>
+        </div>
+    </div>
 </div>
+<form class="form-horizontal">
+
+    <div class="form-group row">
+        <label class="col-xs-4 text-right">消费类型：</label>
+        <div class="col-xs-8 text-left">
+            <select class="form-control">
+                <option>1</option>
+                <option>2</option>
+                <option>3</option>
+                <option>4</option>
+                <option>5</option>
+            </select>
+        </div>
+    </div>
+    <div class=" form-group row">
+        <label class="col-xs-4 text-right">消费金额：</label>
+        <div class="col-xs-8 text-left">
+            <input type="number" class="form-control"/>
+        </div>
+    </div>
+     <div class=" form-group row">
+        <label class="col-xs-4 text-right">消费时间：</label>
+        <div class="col-xs-8 text-left">
+            <input type="datetime-local" class="form-control"/>
+        </div>
+
+    </div>
+</form>
 {%endblock%}
 {%block bottom%}
 <script type="text/javascript">
@@ -39,50 +72,54 @@
         LoadHtml(pYear,pMonth);
     });
     function ShowCaseDetal(obj) {
-        alert(obj)
-    }
+        layer.open({
+            anim: 'up'
+            ,content: '展现的是全部结构'
+            ,btn: ['保存', '取消']
+        });
+    };
     //上个月
     function upMonth() {
         var temDate = new Date(tmpMonth);
-        temDate.setMonth(temDate.getMonth()-1)
-        LoadHtml(temDate.getFullYear(),temDate.getMonth())
+        temDate.setMonth(temDate.getMonth()-1);
+        LoadHtml(temDate.getFullYear(),temDate.getMonth());
         tmpMonth = temDate.getFullYear()+"-"+(temDate.getMonth()+1);
-    }
+    };
     //下个月
     function dowMonth() {
         var temDate = new Date(tmpMonth);
-        temDate.setMonth(temDate.getMonth()+1)
-        LoadHtml(temDate.getFullYear(),temDate.getMonth())
-        tmpMonth = temDate.getFullYear()+"-"+(temDate.getMonth());
-    }
+        temDate.setMonth(temDate.getMonth()+1);
+        LoadHtml(temDate.getFullYear(),temDate.getMonth());
+        tmpMonth = temDate.getFullYear()+"-"+(temDate.getMonth()+1);
+    };
 
     //本月
     function ResultMonth(){
         var temDate = new Date();
-        LoadHtml(temDate.getFullYear(),temDate.getMonth())
+        LoadHtml(temDate.getFullYear(),temDate.getMonth());
         tmpMonth = temDate.getFullYear()+"-"+(temDate.getMonth()+1);
-    }
+    };
 
     function LoadHtml(pYear,pMonth) {
         clearHtml();
         if ((pYear % 4 == 0 && pYear % 100 != 0) || (pYear % 100 == 0 && pYear % 400 == 0)) {
-            monthsDayNum[1] = 29
+            monthsDayNum[1] = 29;
         }
         else {
-            monthsDayNum[1] = 28
-        }
+            monthsDayNum[1] = 28;
+        };
         monDays = monthsDayNum[pMonth];
         tmpMonth = pYear+"-"+(pMonth+1);
         for (var i = 1 ; i <= monthsDayNum[pMonth];++i){
-            $("#day_"+i).attr('style','width: 100px;height: 100px;cursor:pointer').attr('onclick','ShowCaseDetal("'+(pYear+'-'+(pMonth+1)+'-'+i)+'")');
-            $("#day_"+i).html('<lable style="display: flex;bottom:0px;" >'+pYear+'年'+((pMonth+1)+'月'+i+'日')+'</lable></br><label style="color: #FF5A2C;">消费：0.00元</label></br><label style="color:#00BBB1">收入：0.00元</label>');
-        }
-
-    }
+            $("#day_"+i).attr('style','width: 10%;height: 20%;cursor:pointer;').attr('onclick','ShowCaseDetal("'+(pYear+'-'+(pMonth+1)+'-'+i)+'")');
+            $("#day_"+i).html('<lable style="display: flex;bottom:0px;" >'+pYear+'年'+((pMonth+1)+'月'+i+'日')+'</lable><label style="color: #FF5A2C;">9999.99元</label><label style="color:#00BBB1">9999.99元</label>');
+        };
+    };
     function clearHtml() {
         for (var i = 1 ; i <= 31;++i) {
-            $("#day_"+i).html('');
-        }
-    }
+            $("#day_"+i).html('&nbsp;&nbsp;</br>&nbsp;&nbsp;</br>');
+            $("#day_"+i).removeAttr('onclick').attr('style','width: 10%;height: 20%;');
+        };
+    };
 </script>
 {%endblock%}
