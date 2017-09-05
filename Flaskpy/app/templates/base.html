@@ -29,10 +29,16 @@
         @media only screen and (min-width: 480px) and (max-width: 767px) {
             .row { margin:0 auto; width:456px; }
         }
+        canvas{
+            position:absolute;
+            top:0;
+            left:0;
+            background-color:black;
+        }
     </style>
 </head>
 <body>
-<div class="bg"><img src="/static/menuCSS/imgs/home-default17.jpg" width="100%" height="100%"></div>
+<div class="bg"><canvas id='c'></canvas></div>
 <div class="nav4">
     <nav>
         <div id="nav4_ul" class="nav_4">
@@ -88,6 +94,7 @@
 <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
 <script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
 <script src="/static/layer/mobile/layer.js"></script>
+<script src="/static/menuCSS/canvas_Background.js"></script>
 <script src="/static/menuCSS/nav4.js"></script>
 <script type="text/javascript">
     window.onload=function () {
