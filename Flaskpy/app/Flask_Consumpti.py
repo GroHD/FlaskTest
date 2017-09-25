@@ -81,6 +81,9 @@ def CheckedComsunPti(typeName,id):
             return True
         else:
             return False
+#拿到消费类型的数据
+def GetComsumTypeList():
+    pass;
 
 def GetMaxId():
     consuAll = db.session.query(ConsumptionType).order_by(ConsumptionType.id.desc()).first()

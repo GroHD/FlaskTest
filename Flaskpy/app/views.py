@@ -216,6 +216,9 @@ def ConsunPtionRe():
     else:
         return redirect(url_for('index'))
 
+@app.route('/GetConTypeList',methods=['GET'])
+def GetConTypeList():
+    return Flask_Consumpti.GetComsumTypeList()
 #404错误
 @app.errorhandler(404)
 def error_NotPage(e):
