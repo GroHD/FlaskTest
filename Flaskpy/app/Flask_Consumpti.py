@@ -8,9 +8,10 @@ r'''
     获取消费类型列表
     @pageIndex 是页码
 '''
-from .models import  ConsumptionType
+from .models import  ConsumptionType,ConsumptionRecord
 from . import  db
 from flask import  render_template,g
+import time
 #获取列表
 def GetComsumPtiList(pageIndex):
     consuAll =   db.session.query(ConsumptionType).order_by(ConsumptionType.id.asc()).all()
@@ -81,10 +82,18 @@ def CheckedComsunPti(typeName,id):
             return True
         else:
             return False
+
 #拿到消费类型的数据
 def GetComsumTypeList():
-    pass;
-
+    conTyp = db.session.query(ConsumptionType).filter(ConsumptionType.typeDisable == 1).order_by(ConsumptionType.id.asc()).all()
+    return conTyp
+def AddConsunPtion(xfType,xfMoney,xfTime,jeYongTu):
+    try:
+        consun = ConsumptionRecord(consumptionTypeId=xfType,consumptionMoney=xfMoney,consumptionUserId = g.user.id,consumptionType=jeYongTu,consumptionDisable = 1,consumptionInsertUserId = g.user.id)
+        db.session.add(consun)
+        db.session.commit()
+    except Exception as ex:
+        raise  ex
 def GetMaxId():
     consuAll = db.session.query(ConsumptionType).order_by(ConsumptionType.id.desc()).first()
     if consuAll is not None:

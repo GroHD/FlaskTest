@@ -212,13 +212,21 @@ def ConsumPtionDelete():
 @app.route('/ConsumptionRe',methods=['GET'])
 def ConsunPtionRe():
     if g.user is not None:
-        return  render_template('/Consumpti/ConsunPtionReOptions.html',title='消费记录',menu=g.menu)
+        conType = GetConTypeList()
+        return  render_template('/Consumpti/ConsunPtionReOptions.html',title='消费记录',menu=g.menu,conType = conType)
     else:
         return redirect(url_for('index'))
-
-@app.route('/GetConTypeList',methods=['GET'])
+#获取消费类型
 def GetConTypeList():
     return Flask_Consumpti.GetComsumTypeList()
+
+@app.route('/ConsunPtionReSave',methods=['POST'])
+def SaveConsunPtion():
+    xfType = request.values.get('xfType') #消费类型
+    xfMoney = request.values.get('xfMoney')#消费金额
+    xfTime = request.values.get('xfTime')#消费时间
+    jeYongTu = request.values.get('jeYongTu')#金额用途
+    return Flask_Consumpti.AddConsunPtion(xfType,xfMoney,xfTime,jeYongTu)
 #404错误
 @app.errorhandler(404)
 def error_NotPage(e):

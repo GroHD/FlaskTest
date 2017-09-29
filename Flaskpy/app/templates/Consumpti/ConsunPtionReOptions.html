@@ -33,39 +33,44 @@
         </div>
     </div>
 </div>
-<form class="form-horizontal">
 
-    <div class="form-group row">
-        <label class="col-xs-4 text-right">消费类型：</label>
-        <div class="col-xs-8 text-left">
-            <select class="form-control">
-                <option>1</option>
-                <option>2</option>
-                <option>3</option>
-                <option>4</option>
-                <option>5</option>
-            </select>
-        </div>
-    </div>
-    <div class=" form-group row">
-        <label class="col-xs-4 text-right">消费金额：</label>
-        <div class="col-xs-8 text-left">
-            <input type="number" class="form-control"/>
-        </div>
-    </div>
-     <div class=" form-group row">
-        <label class="col-xs-4 text-right">消费时间：</label>
-        <div class="col-xs-8 text-left">
-            <input type="datetime-local" class="form-control"/>
-        </div>
-
-    </div>
-</form>
 {%endblock%}
 {%block bottom%}
 <script type="text/javascript">
     var monthsDayNum =[31,28,31,30,31,30,31,31,30,31,30,31];
     var tmpMonth = "";
+    //添加
+    var optionHtml="<form>\
+    <div class='form-group'>\
+        <label>消费类型：</label>\
+            <select class='form-control' id='xfType' name='xfType'>\
+                {%for conItem in conType%}\
+                    <option value='{{conItem.id}}'>{{conItem.typeName}}</option>\
+                {%endfor%}\
+            </select>\
+    </div>\
+    <div class='form-group'>\
+        <label >金额用途：</label>\
+       <select class='form-control' id='jeYongTu' name='jeYongTu'>\
+            <option value='1'>收入</option>\
+            <option value='0'>支出</option>\
+        </select>\
+    </div>\
+    <div class='form-group'>\
+        <label for='xfMoney'>消费金额：</label>\
+        <div  id='div_xfMoney'>\
+         <input type='number' class='form-control' id='xfMoney' name='xfMoney'/>\
+    </div>\
+     <div class='form-group'>\
+        <label for='xfTime' >消费时间：</label>\
+            <input type='text' class='form-control' id='xfTime' name='xfTime' readonly='readonly'/>\
+    </div>\
+</form>";
+    //展现的表格
+    var tabHtml="<table class='table table-bordered'>\
+        <tr><td colspan='3' class='text-left'>消费时间：<label id='xfSj'>2017年04月3日</label></td><td><a href='javascript:ShowAddCase()'>添加</a></td></tr>\
+        <tr><td>序号</td><td>金额</td><td>消费人</td><td>操作</td></tr></tr>\
+        </table>";
     $(function () {
         var pYear=new Date().getFullYear();
         var pMonth = new Date().getMonth();
@@ -74,10 +79,45 @@
     function ShowCaseDetal(obj) {
         layer.open({
             anim: 'up'
-            ,content: '展现的是全部结构'
-            ,btn: ['保存', '取消']
+            ,content: tabHtml
+            ,btn: ['取消']
+
         });
+            $("#xfSj").html(obj);
     };
+    //添加消费
+    function ShowAddCase(){
+        var xfTime =  $("#xfSj").html();
+          layer.open({
+            anim: 'up'
+            ,content: optionHtml
+            ,btn: ['保存','取消']
+            ,yes:SaveMoney
+        });
+        $("#xfTime").val(xfTime);
+    }
+    //保存消费
+    function SaveMoney(){
+        //消费类型
+        var xfType = $("#xfType").val();
+        //消费金额
+        var xfMoney = $("#xfMoney").val();
+        //消费日期
+        var xfTime = $("#xfTime").val();
+        //金额用途
+        var jeYongTu = $("#jeYongTu").val();
+        if (xfMoney.trim().length<=0){
+            ErrorShowMess('div_xfMoney','消费金额不可为空,请添加');
+            return ;
+        }
+        var data ={xfType:xfType,xfMoney:xfMoney,xfTime:xfTime,jeYongTu:jeYongTu};
+        $.post('/ConsunPtionReSave',data, function(data){
+
+
+        });
+
+    };
+
     //上个月
     function upMonth() {
         var temDate = new Date(tmpMonth);
@@ -111,8 +151,8 @@
         monDays = monthsDayNum[pMonth];
         tmpMonth = pYear+"-"+(pMonth+1);
         for (var i = 1 ; i <= monthsDayNum[pMonth];++i){
-            $("#day_"+i).attr('style','width: 10%;height: 20%;cursor:pointer;').attr('onclick','ShowCaseDetal("'+(pYear+'-'+(pMonth+1)+'-'+i)+'")');
-            $("#day_"+i).html('<lable style="display: flex;bottom:0px;" >'+pYear+'年'+((pMonth+1)+'月'+i+'日')+'</lable><label style="color: #FF5A2C;">9999.99元</label><label style="color:#00BBB1">9999.99元</label>');
+            $("#day_"+i).attr('style','width: 10%;height: 20%;cursor:pointer;').attr('onclick','ShowCaseDetal("'+(pYear+'年'+(pMonth+1)+'月'+i)+'日")');
+            $("#day_"+i).html('<lable style="display: flex;bottom:0px;" >'+pYear+'年'+((pMonth+1)+'月'+i+'日')+'</lable><label style="color: #FF5A2C;">0.00元</label>&nbsp;<label style="color:#00BBB1">0.00元</label>');
         };
     };
     function clearHtml() {
