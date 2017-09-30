@@ -6,9 +6,8 @@ Name:HD
 from . import app,db,Flask_Email,Flask_Menu,Flask_SystemUser,Flask_Consumpti
 from flask import  render_template,redirect,url_for,session,flash,g,request
 from .forms import LoginForm
-from .models import LoginUser,LoginUserIp,SystemMenu
+from .models import LoginUser,LoginUserIp
 from . import  models
-from jinja2 import contextfunction
 import math
 
 #首页
@@ -216,17 +215,34 @@ def ConsunPtionRe():
         return  render_template('/Consumpti/ConsunPtionReOptions.html',title='消费记录',menu=g.menu,conType = conType)
     else:
         return redirect(url_for('index'))
+
+@app.route('/GetMoney',methods=['GET'])
+def GetDayMoney():
+    if g.user is not None:
+        try:
+            return Flask_Consumpti.GetMoney()
+        except Exception as ex:
+            return ex
+    else:
+        return "login Out"
 #获取消费类型
 def GetConTypeList():
     return Flask_Consumpti.GetComsumTypeList()
-
+#添加消费金额
 @app.route('/ConsunPtionReSave',methods=['POST'])
 def SaveConsunPtion():
-    xfType = request.values.get('xfType') #消费类型
-    xfMoney = request.values.get('xfMoney')#消费金额
-    xfTime = request.values.get('xfTime')#消费时间
-    jeYongTu = request.values.get('jeYongTu')#金额用途
-    return Flask_Consumpti.AddConsunPtion(xfType,xfMoney,xfTime,jeYongTu)
+    if g.user is not None:
+        try:
+            xfType = request.values.get('xfType') #消费类型
+            xfMoney = request.values.get('xfMoney')#消费金额
+            xfTime = request.values.get('xfTime')#消费时间
+            jeYongTu = request.values.get('jeYongTu')#金额用途
+            return Flask_Consumpti.AddConsunPtion(xfType,xfMoney,xfTime,jeYongTu)
+        except Exception as ex:
+            return ex;
+
+    else:
+        return " Login Out"
 #404错误
 @app.errorhandler(404)
 def error_NotPage(e):

@@ -206,3 +206,4 @@ class ConsumptionRecord(db.Model):
 
 
 
+

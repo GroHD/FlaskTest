@@ -10,8 +10,9 @@ r'''
 '''
 from .models import  ConsumptionType,ConsumptionRecord
 from . import  db
+from sqlalchemy import  func
 from flask import  render_template,g
-import time
+from  datetime import datetime
 #获取列表
 def GetComsumPtiList(pageIndex):
     consuAll =   db.session.query(ConsumptionType).order_by(ConsumptionType.id.asc()).all()
@@ -87,13 +88,33 @@ def CheckedComsunPti(typeName,id):
 def GetComsumTypeList():
     conTyp = db.session.query(ConsumptionType).filter(ConsumptionType.typeDisable == 1).order_by(ConsumptionType.id.asc()).all()
     return conTyp
+
 def AddConsunPtion(xfType,xfMoney,xfTime,jeYongTu):
     try:
-        consun = ConsumptionRecord(consumptionTypeId=xfType,consumptionMoney=xfMoney,consumptionUserId = g.user.id,consumptionType=jeYongTu,consumptionDisable = 1,consumptionInsertUserId = g.user.id)
+        if(len(xfMoney) <=0):
+            return "1"
+        xfdt =datetime.strptime(xfTime,'%Y-%m-%d')
+        consun = ConsumptionRecord(consumptionTypeId=xfType,consumptionMoney=xfMoney,consumptionUserId = g.user.id,consumptionType=jeYongTu,consumptionDisable = 1,consumptionInsertUserId = g.user.id,consumptionInsertTime = datetime.utcnow(),consumptionTime=xfdt)
         db.session.add(consun)
         db.session.commit()
+        return  "0"
     except Exception as ex:
         raise  ex
+
+def GetMoney():
+    try:
+        consumAll = db.session.query(func.sum(ConsumptionRecord.consumptionMoney),ConsumptionRecord.consumptionType,ConsumptionRecord.consumptionTime).group_by(ConsumptionRecord.consumptionType,ConsumptionRecord.consumptionTime).all()
+        if consumAll is None or len(consumAll)<=0:
+            return "[]"
+        jsonStr ='['
+        for consumItem in consumAll:
+            if(len(jsonStr)>2):
+                jsonStr = jsonStr+','
+            jsonStr = jsonStr+'{\"money\":'+str(consumItem[0])+',\"typ\":\"'+str(consumItem[1])+'\"}'
+        jsonStr= jsonStr+']'
+        return jsonStr
+    except Exception as ex:
+        return ex
 def GetMaxId():
     consuAll = db.session.query(ConsumptionType).order_by(ConsumptionType.id.desc()).first()
     if consuAll is not None:
