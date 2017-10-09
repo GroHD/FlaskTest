@@ -216,11 +216,11 @@ def ConsunPtionRe():
     else:
         return redirect(url_for('index'))
 
-@app.route('/GetMoney',methods=['GET'])
-def GetDayMoney():
+@app.route('/GetMoney/<sDate>/<eDate>',methods=['GET'])
+def GetDayMoney(sDate,eDate):
     if g.user is not None:
         try:
-            return Flask_Consumpti.GetMoney()
+            return Flask_Consumpti.GetMoney(sDate,eDate)
         except Exception as ex:
             return ex
     else:

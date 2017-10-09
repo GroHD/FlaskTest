@@ -1,46 +1,46 @@
-    {% extends "base.html"%}
-    {% block content%}
-    <div class="panel-body">
-        <table id="dayNum" class="table table-bordered">
-            <tr >
-                <td id="day_1"></td><td id="day_2"></td><td id="day_3"></td><td id="day_4"></td><td id="day_5"></td><td id="day_6"></td>
-            </tr>
-            <tr >
-                <td id="day_7"></td><td id="day_8"></td><td id="day_9"></td><td id="day_10"></td><td id="day_11"></td><td id="day_12"></td>
-            </tr>
-            <tr >
-                <td id="day_13"></td><td id="day_14"></td><td id="day_15"></td><td id="day_16"></td><td id="day_17"></td><td id="day_18"></td>
-            </tr>
-            <tr >
-                </td><td id="day_19"></td><td id="day_20"></td><td id="day_21"></td> <td  id="day_22"></td><td  id="day_23"></td><td id="day_24"></td>
-            </tr>
-            <tr >
-                <td id="day_25"></td><td id="day_26"></td><td id="day_27"></td><td id="day_28" ></td><td id="day_29" ></td><td id="day_30" ></td>
-            </tr>
-            <tr >
-                <td id="day_31">&nbsp;</td>
-            </tr>
-        </table>
-        <div class="row">
-            <div class="col-xs-4 text-left">
-                <button class="btn btn-default" onclick="upMonth()">上个月</button>&nbsp;&nbsp;&nbsp;<button class="btn btn-default" onclick="ResultMonth()">本月</button>
-            </div>
-            <div class="col-xs-4 text-center">
-                <button class="btn btn-info disabled">图表</button>&nbsp;&nbsp;&nbsp;<button class="btn btn-success" >图形</button>
-            </div>
-            <div class="col-xs-4 text-right">
-                <button class="btn btn-default" onclick ="dowMonth()">下个月</button>
-            </div>
+{% extends "base.html"%}
+{% block content%}
+<div class="panel-body">
+    <table id="dayNum" class="table table-bordered">
+        <tr >
+            <td id="day_1"></td><td id="day_2"></td><td id="day_3"></td><td id="day_4"></td><td id="day_5"></td><td id="day_6"></td>
+        </tr>
+        <tr >
+            <td id="day_7"></td><td id="day_8"></td><td id="day_9"></td><td id="day_10"></td><td id="day_11"></td><td id="day_12"></td>
+        </tr>
+        <tr >
+            <td id="day_13"></td><td id="day_14"></td><td id="day_15"></td><td id="day_16"></td><td id="day_17"></td><td id="day_18"></td>
+        </tr>
+        <tr >
+            </td><td id="day_19"></td><td id="day_20"></td><td id="day_21"></td> <td  id="day_22"></td><td  id="day_23"></td><td id="day_24"></td>
+        </tr>
+        <tr >
+            <td id="day_25"></td><td id="day_26"></td><td id="day_27"></td><td id="day_28" ></td><td id="day_29" ></td><td id="day_30" ></td>
+        </tr>
+        <tr >
+            <td id="day_31">&nbsp;</td>
+        </tr>
+    </table>
+    <div class="row">
+        <div class="col-xs-4 text-left">
+            <button class="btn btn-default" onclick="upMonth()">上个月</button>&nbsp;&nbsp;&nbsp;<button class="btn btn-default" onclick="ResultMonth()">本月</button>
+        </div>
+        <div class="col-xs-4 text-center">
+            <button class="btn btn-info disabled">图表</button>&nbsp;&nbsp;&nbsp;<button class="btn btn-success" >图形</button>
+        </div>
+        <div class="col-xs-4 text-right">
+            <button class="btn btn-default" onclick ="dowMonth()">下个月</button>
         </div>
     </div>
+</div>
 
-    {%endblock%}
-    {%block bottom%}
-    <script type="text/javascript">
-        var monthsDayNum =[31,28,31,30,31,30,31,31,30,31,30,31];
-        var tmpMonth = "";
-        //添加
-        var optionHtml="<form>\
+{%endblock%}
+{%block bottom%}
+<script type="text/javascript">
+    var monthsDayNum =[31,28,31,30,31,30,31,31,30,31,30,31];
+    var tmpMonth = "";
+    //添加
+    var optionHtml="<form>\
         <div class='form-group'>\
             <label>消费类型：</label>\
                 <select class='form-control' id='xfType' name='xfType'>\
@@ -66,130 +66,135 @@
                 <input type='text' class='form-control' id='xfTime' name='xfTime' readonly='readonly'/>\
         </div>\
     </form>";
-        //展现的表格
-        var tabHtml="<table class='table table-bordered'>\
+    //展现的表格
+    var tabHtml="<table class='table table-bordered'>\
             <tr><td colspan='3' class='text-left'>消费时间：<label id='xfSj'>2017年04月3日</label></td><td><a href='javascript:ShowAddCase()'>添加</a></td></tr>\
             <tr><td>序号</td><td>金额</td><td>消费人</td><td>操作</td></tr></tr>\
             </table>";
-        $(function () {
-            var pYear=new Date().getFullYear();
-            var pMonth = new Date().getMonth();
-            LoadHtml(pYear,pMonth);
+    $(function () {
+        var pYear=new Date().getFullYear();
+        var pMonth = new Date().getMonth();
+        LoadHtml(pYear,pMonth);
+    });
+    function ShowCaseDetal(obj) {
+        layer.open({
+            anim: 'up'
+            ,content: tabHtml
+            ,btn: ['取消']
+
         });
-        function ShowCaseDetal(obj) {
-            layer.open({
-                anim: 'up'
-                ,content: tabHtml
-                ,btn: ['取消']
-
-            });
-            var dtSpt = obj.split('-');
-            $("#xfSj").html(dtSpt[0]+"年"+dtSpt[1]+"月"+dtSpt[2]+"日");
-            $("#xfSj").attr('qu_DT',obj);
-        };
-        //添加消费
-        function ShowAddCase(){
-            var xfTime =  $("#xfSj").html();
-            var xfDt = $("#xfSj").attr('qu_DT');
-            layer.open({
-                anim: 'up'
-                ,content: optionHtml
-                ,btn: ['保存','取消']
-                ,yes:SaveMoney
-            });
-            $("#xfTime").attr('qu_DT',xfDt);
-            $("#xfTime").val(xfTime);
+        var dtSpt = obj.split('-');
+        $("#xfSj").html(dtSpt[0]+"年"+dtSpt[1]+"月"+dtSpt[2]+"日");
+        $("#xfSj").attr('qu_DT',obj);
+    };
+    //添加消费
+    function ShowAddCase(){
+        var xfTime =  $("#xfSj").html();
+        var xfDt = $("#xfSj").attr('qu_DT');
+        layer.open({
+            anim: 'up'
+            ,content: optionHtml
+            ,btn: ['保存','取消']
+            ,yes:SaveMoney
+        });
+        $("#xfTime").attr('qu_DT',xfDt);
+        $("#xfTime").val(xfTime);
+    }
+    //保存消费
+    function SaveMoney(){
+        //消费类型
+        var xfType = $("#xfType").val();
+        //消费金额
+        var xfMoney = $("#xfMoney").val();
+        //消费日期
+        var xfTime = $("#xfTime").attr('qu_DT');
+        //金额用途
+        var jeYongTu = $("#jeYongTu").val();
+        if (xfMoney.trim().length<=0){
+            ErrorShowMess('div_xfMoney','消费金额不可为空,请添加');
+            return ;
         }
-        //保存消费
-        function SaveMoney(){
-            //消费类型
-            var xfType = $("#xfType").val();
-            //消费金额
-            var xfMoney = $("#xfMoney").val();
-            //消费日期
-            var xfTime = $("#xfTime").attr('qu_DT');
-            //金额用途
-            var jeYongTu = $("#jeYongTu").val();
-            if (xfMoney.trim().length<=0){
-                ErrorShowMess('div_xfMoney','消费金额不可为空,请添加');
-                return ;
+        var data ={xfType:xfType,xfMoney:xfMoney,xfTime:xfTime,jeYongTu:jeYongTu};
+        $.post('/ConsunPtionReSave',data, function(data){
+            if (data == "1"){
+                ErrorShowMess('','添加失败,请稍后再试');
             }
-            var data ={xfType:xfType,xfMoney:xfMoney,xfTime:xfTime,jeYongTu:jeYongTu};
-            $.post('/ConsunPtionReSave',data, function(data){
-                if (data == "1"){
-                    ErrorShowMess('','添加失败,请稍后再试');
-                }
-                else if (data =="0"){
+            else if (data =="0"){
 
-                }
-                else{
-                    ErrorShowMess('',data);
-                }
-
-
-            });
-
-        };
-
-        //上个月
-        function upMonth() {
-            var temDate = new Date(tmpMonth);
-            temDate.setMonth(temDate.getMonth()-1);
-            LoadHtml(temDate.getFullYear(),temDate.getMonth());
-            tmpMonth = temDate.getFullYear()+"-"+(temDate.getMonth()+1);
-        };
-        //下个月
-        function dowMonth() {
-            var temDate = new Date(tmpMonth);
-            temDate.setMonth(temDate.getMonth()+1);
-            LoadHtml(temDate.getFullYear(),temDate.getMonth());
-            tmpMonth = temDate.getFullYear()+"-"+(temDate.getMonth()+1);
-        };
-
-        //本月
-        function ResultMonth(){
-            var temDate = new Date();
-            LoadHtml(temDate.getFullYear(),temDate.getMonth());
-            tmpMonth = temDate.getFullYear()+"-"+(temDate.getMonth()+1);
-        };
-
-        function LoadHtml(pYear,pMonth) {
-            clearHtml();
-            if ((pYear % 4 == 0 && pYear % 100 != 0) || (pYear % 100 == 0 && pYear % 400 == 0)) {
-                monthsDayNum[1] = 29;
             }
-            else {
-                monthsDayNum[1] = 28;
-            };
-            monDays = monthsDayNum[pMonth];
-            tmpMonth = pYear+"-"+(pMonth+1);
+            else{
+                ErrorShowMess('',data);
+            }
+
+
+        });
+
+    };
+
+    //上个月
+    function upMonth() {
+        var temDate = new Date(tmpMonth);
+        temDate.setMonth(temDate.getMonth()-1);
+        LoadHtml(temDate.getFullYear(),temDate.getMonth());
+        tmpMonth = temDate.getFullYear()+"-"+(temDate.getMonth()+1);
+    };
+    //下个月
+    function dowMonth() {
+        var temDate = new Date(tmpMonth);
+        temDate.setMonth(temDate.getMonth()+1);
+        LoadHtml(temDate.getFullYear(),temDate.getMonth());
+        tmpMonth = temDate.getFullYear()+"-"+(temDate.getMonth()+1);
+    };
+
+    //本月
+    function ResultMonth(){
+        var temDate = new Date();
+        LoadHtml(temDate.getFullYear(),temDate.getMonth());
+        tmpMonth = temDate.getFullYear()+"-"+(temDate.getMonth()+1);
+    };
+
+    function LoadHtml(pYear,pMonth) {
+        clearHtml();
+        if ((pYear % 4 == 0 && pYear % 100 != 0) || (pYear % 100 == 0 && pYear % 400 == 0)) {
+            monthsDayNum[1] = 29;
+        }
+        else {
+            monthsDayNum[1] = 28;
+        };
+        monDays = monthsDayNum[pMonth];
+        tmpMonth = pYear+"-"+(pMonth+1);
+        var pMont = (pMonth+1);
+        var mDate = (pYear+'-'+(pMont<10?"0"+pMont:pMont));
+        var qDay = monthsDayNum[pMonth];
+        qDay = qDay<10?"0"+qDay:qDay;
+        $.getJSON('/GetMoney/'+mDate+'-01 00:00:00/'+mDate+'-'+qDay+' 23:59:59',function(result){
             for (var i = 1 ; i <= monthsDayNum[pMonth];++i){
-                pMont = (pMonth+1);
-                var mDate = (pYear+'-'+(pMont<10?"0"+pMont:pMont)+'-'+(i<10?"0"+i:i));
-                $.getJSON('/GetMoney',function(result){
-                    var sr = "0.00元";
-                    var zc = "0.00元";
-                    if (result.length>0){
-                        for (var i = 0 ; i < result.length;++i){
-                            if (result[i].typ == 'False'){
-                                zc = result[i].money+"元";
-                            }
-                            else{
-                                  sr = result[i].money+"元";
-                            }
+                var TmDate = mDate+"-"+(i<10?"0"+i:i);
+                var sr = "0.00元";
+                var zc = "0.00元";
+                for (var j = 0 ; j < result.length;j++){
+                    obj = result[j];
+                    if (obj[TmDate]!=undefined){
+                        if(obj['typ'] == 'False'){
+                            zc = obj[TmDate]+"元";
                         }
-                    }
-                    $("#day_"+i).attr('style','width: 10%;height: 20%;cursor:pointer;').attr('onclick','ShowCaseDetal("'+mDate+'")');
-                    $("#day_"+i).html('<lable style="display: flex;bottom:0px;" >'+pYear+'年'+((pMonth+1)+'月'+i+'日')+'</lable><label style="color: #FF5A2C;">'+zc+'</label>&nbsp;<label style="color:#00BBB1">'+sr+'</label>');
-                });
+                        else{
+                            sr = obj[TmDate]+"元";
+                        };
+                    };
+                };
+
+                $("#day_"+i).attr('style','width: 10%;height: 20%;cursor:pointer;').attr('onclick','ShowCaseDetal("'+mDate+'")');
+                $("#day_"+i).html('<lable style="display: flex;bottom:0px;" >'+pYear+'年'+((pMonth+1)+'月'+i+'日')+'</lable><label style="color: #FF5A2C;">'+zc+'</label>&nbsp;<label style="color:#00BBB1">'+sr+'</label>');
             };
-            $.ajaxSettings.async = true;
+        });
+        $.ajaxSettings.async = true;
+    };
+    function clearHtml() {
+        for (var i = 1 ; i <= 31;++i) {
+            $("#day_"+i).html('&nbsp;&nbsp;</br>&nbsp;&nbsp;</br>');
+            $("#day_"+i).removeAttr('onclick').attr('style','width: 10%;height: 20%;');
         };
-        function clearHtml() {
-            for (var i = 1 ; i <= 31;++i) {
-                $("#day_"+i).html('&nbsp;&nbsp;</br>&nbsp;&nbsp;</br>');
-                $("#day_"+i).removeAttr('onclick').attr('style','width: 10%;height: 20%;');
-            };
-        };
-    </script>
-    {%endblock%}
+    };
+</script>
+{%endblock%}

@@ -101,16 +101,17 @@ def AddConsunPtion(xfType,xfMoney,xfTime,jeYongTu):
     except Exception as ex:
         raise  ex
 
-def GetMoney():
+def GetMoney(sDate,eDate):
     try:
-        consumAll = db.session.query(func.sum(ConsumptionRecord.consumptionMoney),ConsumptionRecord.consumptionType,ConsumptionRecord.consumptionTime).group_by(ConsumptionRecord.consumptionType,ConsumptionRecord.consumptionTime).all()
+        consumAll = db.session.query(func.sum(ConsumptionRecord.consumptionMoney),ConsumptionRecord.consumptionType,ConsumptionRecord.consumptionTime).filter(ConsumptionRecord.consumptionTime>=sDate,ConsumptionRecord.consumptionTime<=eDate).group_by(ConsumptionRecord.consumptionType,ConsumptionRecord.consumptionTime).all()
         if consumAll is None or len(consumAll)<=0:
             return "[]"
         jsonStr ='['
         for consumItem in consumAll:
             if(len(jsonStr)>2):
                 jsonStr = jsonStr+','
-            jsonStr = jsonStr+'{\"money\":'+str(consumItem[0])+',\"typ\":\"'+str(consumItem[1])+'\"}'
+            stp = str(consumItem[2]).split(' ')
+            jsonStr = jsonStr+'{\"'+stp[0]+'\":'+str(consumItem[0])+',\"typ\":\"'+str(consumItem[1])+'\"}'
         jsonStr= jsonStr+']'
         return jsonStr
     except Exception as ex:
