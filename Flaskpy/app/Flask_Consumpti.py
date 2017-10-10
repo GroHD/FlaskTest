@@ -88,19 +88,19 @@ def CheckedComsunPti(typeName,id):
 def GetComsumTypeList():
     conTyp = db.session.query(ConsumptionType).filter(ConsumptionType.typeDisable == 1).order_by(ConsumptionType.id.asc()).all()
     return conTyp
-
+#添加消费
 def AddConsunPtion(xfType,xfMoney,xfTime,jeYongTu):
     try:
         if(len(xfMoney) <=0):
             return "1"
         xfdt =datetime.strptime(xfTime,'%Y-%m-%d')
-        consun = ConsumptionRecord(consumptionTypeId=xfType,consumptionMoney=xfMoney,consumptionUserId = g.user.id,consumptionType=jeYongTu,consumptionDisable = 1,consumptionInsertUserId = g.user.id,consumptionInsertTime = datetime.utcnow(),consumptionTime=xfdt)
+        consun = ConsumptionRecord(consumptionTypeId=int(xfType),consumptionMoney=xfMoney,consumptionUserId = g.user.id,consumptionType=int(jeYongTu),consumptionDisable = 1,consumptionInsertUserId = g.user.id,consumptionInsertTime = datetime.utcnow(),consumptionTime=xfdt)
         db.session.add(consun)
         db.session.commit()
         return  "0"
     except Exception as ex:
         raise  ex
-
+#拿到消费的列表
 def GetMoney(sDate,eDate):
     try:
         consumAll = db.session.query(func.sum(ConsumptionRecord.consumptionMoney),ConsumptionRecord.consumptionType,ConsumptionRecord.consumptionTime).filter(ConsumptionRecord.consumptionTime>=sDate,ConsumptionRecord.consumptionTime<=eDate).group_by(ConsumptionRecord.consumptionType,ConsumptionRecord.consumptionTime).all()
@@ -108,7 +108,7 @@ def GetMoney(sDate,eDate):
             return "[]"
         jsonStr ='['
         for consumItem in consumAll:
-            if(len(jsonStr)>2):
+            if len(jsonStr)>2:
                 jsonStr = jsonStr+','
             stp = str(consumItem[2]).split(' ')
             jsonStr = jsonStr+'{\"'+stp[0]+'\":'+str(consumItem[0])+',\"typ\":\"'+str(consumItem[1])+'\"}'
@@ -116,6 +116,32 @@ def GetMoney(sDate,eDate):
         return jsonStr
     except Exception as ex:
         return ex
+
+#获取某一天的消费情况
+def GetDateCase(date):
+    try:
+        caseDate = db.session.query(ConsumptionRecord.id,ConsumptionRecord.consumptionMoney,ConsumptionRecord.consumptionUserId,ConsumptionRecord.consumptionType).filter(ConsumptionRecord.consumptionTime>=str(date)+' 00:00:00',ConsumptionRecord.consumptionTime<=str(date)+' 23:59:59').all()
+        if caseDate is None or len(caseDate)<=0:
+            return "[]"
+        jsonStr='['
+        for item in caseDate:
+            if  len(jsonStr)>2:
+                jsonStr = jsonStr+','
+            jsonStr = jsonStr+'{"ID":'+str(item[0])+',"Money":'+str(item[1])+',"UserId":'+str(item[2])+',"ConType":"'+str(item[3])+'"}'
+        jsonStr = jsonStr+']'
+        return jsonStr
+    except Exception as ex:
+        return ex
+
+# 删除消费
+def DeleteDatacash(id):
+    try:
+       db.session.query(ConsumptionRecord).filter(ConsumptionRecord.id == id).delete()
+       db.session.commit()
+       return "1"
+    except Exception as ex:
+        return ex
+
 def GetMaxId():
     consuAll = db.session.query(ConsumptionType).order_by(ConsumptionType.id.desc()).first()
     if consuAll is not None:

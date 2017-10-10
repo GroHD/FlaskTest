@@ -21,12 +21,14 @@
             <td id="day_31">&nbsp;</td>
         </tr>
     </table>
+
     <div class="row">
         <div class="col-xs-4 text-left">
             <button class="btn btn-default" onclick="upMonth()">上个月</button>&nbsp;&nbsp;&nbsp;<button class="btn btn-default" onclick="ResultMonth()">本月</button>
         </div>
         <div class="col-xs-4 text-center">
-            <button class="btn btn-info disabled">图表</button>&nbsp;&nbsp;&nbsp;<button class="btn btn-success" >图形</button>
+            <div id="day_32"></div>
+            <!--<button class="btn btn-info disabled">图表</button>&nbsp;&nbsp;&nbsp;<button class="btn btn-success" >图形</button>-->
         </div>
         <div class="col-xs-4 text-right">
             <button class="btn btn-default" onclick ="dowMonth()">下个月</button>
@@ -67,9 +69,9 @@
         </div>\
     </form>";
     //展现的表格
-    var tabHtml="<table class='table table-bordered'>\
-            <tr><td colspan='3' class='text-left'>消费时间：<label id='xfSj'>2017年04月3日</label></td><td><a href='javascript:ShowAddCase()'>添加</a></td></tr>\
-            <tr><td>序号</td><td>金额</td><td>消费人</td><td>操作</td></tr></tr>\
+    var tabHtml="<table id='caseData' class='table table-bordered'>\
+            <tr><td colspan='4' class='text-left'>消费时间：<label id='xfSj'>2017年04月3日</label></td><td><a href='javascript:ShowAddCase()'>添加</a></td></tr>\
+            <tr><td>序号</td><td>金额</td><td>消费类型</td><td>消费人</td><td>操作</td></tr></tr>\
             </table>";
     $(function () {
         var pYear=new Date().getFullYear();
@@ -82,6 +84,12 @@
             ,content: tabHtml
             ,btn: ['取消']
 
+        });
+        //获取详细信息
+        $.getJSON('/GetDataCase/'+obj,function (result) {
+            for(var i = 0 ; i < result.length;++i){
+                $("#caseData").append("<tr ><td>"+result[i]["ID"]+"</td><td>"+result[i]["Money"]+"</td><td>"+(result[i]["ConType"]=="False"?"支出":"收入")+"</td><td>"+result[i]["UserId"]+"</td><td><a href='javascript:DeleteCashData("+result[i]["ID"]+")'>删除</a></td></tr></tr>");
+            };
         });
         var dtSpt = obj.split('-');
         $("#xfSj").html(dtSpt[0]+"年"+dtSpt[1]+"月"+dtSpt[2]+"日");
@@ -100,6 +108,18 @@
         $("#xfTime").attr('qu_DT',xfDt);
         $("#xfTime").val(xfTime);
     }
+    //删除消费
+    function DeleteCashData(id){
+        var data = {id:id};
+        $.post('/DeleteDatacash',data,function (result) {
+            if (result == "1"){
+                window.location = window.location;
+            }
+            else {
+                LoadSuccessMess('删除失败,请稍后再试');
+            }
+        });
+    };
     //保存消费
     function SaveMoney(){
         //消费类型
@@ -120,15 +140,12 @@
                 ErrorShowMess('','添加失败,请稍后再试');
             }
             else if (data =="0"){
-
+                LoadSuccessMess('保存成功!');
             }
             else{
                 ErrorShowMess('',data);
             }
-
-
         });
-
     };
 
     //上个月
@@ -167,6 +184,8 @@
         var mDate = (pYear+'-'+(pMont<10?"0"+pMont:pMont));
         var qDay = monthsDayNum[pMonth];
         qDay = qDay<10?"0"+qDay:qDay;
+        var zsr =0.00;
+        var zzc = 0.00;
         $.getJSON('/GetMoney/'+mDate+'-01 00:00:00/'+mDate+'-'+qDay+' 23:59:59',function(result){
             for (var i = 1 ; i <= monthsDayNum[pMonth];++i){
                 var TmDate = mDate+"-"+(i<10?"0"+i:i);
@@ -177,16 +196,19 @@
                     if (obj[TmDate]!=undefined){
                         if(obj['typ'] == 'False'){
                             zc = obj[TmDate]+"元";
+                            zzc+= obj[TmDate];
                         }
                         else{
                             sr = obj[TmDate]+"元";
+                            zsr+= obj[TmDate];
                         };
                     };
                 };
 
-                $("#day_"+i).attr('style','width: 10%;height: 20%;cursor:pointer;').attr('onclick','ShowCaseDetal("'+mDate+'")');
+                $("#day_"+i).attr('style','width: 10%;height: 20%;cursor:pointer;').attr('onclick','ShowCaseDetal("'+TmDate+'")');
                 $("#day_"+i).html('<lable style="display: flex;bottom:0px;" >'+pYear+'年'+((pMonth+1)+'月'+i+'日')+'</lable><label style="color: #FF5A2C;">'+zc+'</label>&nbsp;<label style="color:#00BBB1">'+sr+'</label>');
             };
+             $("#day_32").html("<label style=\"color: #FF5A2C;\">总支出："+zzc+"元</label>&nbsp;<label style=\"color:#00BBB1\">总收入："+zsr+"元</label>");
         });
         $.ajaxSettings.async = true;
     };

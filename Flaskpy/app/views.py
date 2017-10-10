@@ -243,6 +243,29 @@ def SaveConsunPtion():
 
     else:
         return " Login Out"
+#拿到当天的消费情况
+@app.route('/GetDataCase/<date>',methods=['GET'])
+def GetDateCase(date):
+    if g.user is not None:
+        try:
+            return Flask_Consumpti.GetDateCase(date)
+        except Exception as ex:
+            return ex
+    else:
+        return 'Login Out'
+
+#删除消费记录
+@app.route('/DeleteDatacash',methods=['POST'])
+def DeleteDatacash():
+    if g.user is not None:
+        try:
+            cId = request.values.get('id')
+            return Flask_Consumpti.DeleteDatacash(cId)
+        except Exception as ex:
+            return ex
+    else:
+        return 'Login Out '
+
 #404错误
 @app.errorhandler(404)
 def error_NotPage(e):
